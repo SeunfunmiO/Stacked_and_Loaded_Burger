@@ -58,7 +58,7 @@ export interface Stats {
   revenueTrend: string;
 }
 
-export type StaffTabType = 'orders' | 'menu' | 'staff' | 'analytics';
+export type StaffTabType = 'orders' | 'manage-menu' | 'manage-menu-options' | 'analytics';
 
 export interface DashboardStats {
   totalRevenue: string;

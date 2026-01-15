@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ShoppingBag, Star, Award, Clock, MapPin, User, Settings, LogOut, Package, Heart, Bell, ChevronRight, TrendingUp, ChefHat } from 'lucide-react';
 import Image from 'next/image';
 import { FavoriteItem, IOrder, OrderItemPayload, Reward, TabType } from '@/lib/type';
-import { getCustomer, getSingleOrder, logOut } from '@/lib/actions';
+import { getCustomer, getSingleOrder, logOut, updateUser } from '@/lib/actions';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
@@ -17,6 +17,7 @@ import { Button } from './ui/button';
 const UserClient = ({ userId }: { userId: string }) => {
     const [activeTab, setActiveTab] = useState<TabType>('overview');
     const [orders, setOrders] = useState<IOrder[]>([])
+    const [recentOrder, setRecentOrder] = useState<IOrder[]>([])
     const [customer, setCustomer] = useState(
         {
             fullname: "",
@@ -94,15 +95,35 @@ const UserClient = ({ userId }: { userId: string }) => {
             }
 
             setOrders(res.orders)
+            setRecentOrder(res.orders.slice(0, 3))
         }
         fetchOrder()
     }, [userId])
 
+    const updateCustomerDetails = async (data: { email: string, fullname: string }) => {
+        try {
+            const response = await updateUser(data);
+            if (!response.success) {
+                return toast.error(response.message)
+            }
+            setCustomer(prev => ({
+                ...prev,
+                email: data.email,
+                fullname: data.fullname
+            }))
+            toast.success('User details updated successfully!');
+        } catch (error) {
+            console.error('error updating user details:', error);
+            toast.error('Failed to update user details.');
+        }
+    }
 
     const getStatusColor = (status: IOrder['status']): string => {
         switch (status) {
             case 'pending':
                 return 'bg-yellow-500/20 text-green-400';
+            case 'out-for-delivery':
+                return 'bg-sandbrown-500/20 text-sandbrown-400';
             case 'confirmed':
                 return 'bg-green-500/20 text-green-400';
             case 'delivered':
@@ -116,21 +137,6 @@ const UserClient = ({ userId }: { userId: string }) => {
         }
     };
 
-    if (orders.length === 0) {
-        return (
-            <div className='flex justify-center items-center'>
-                No order yet
-
-                <Button
-                    onClick={() => router.push('/order-delivery')}
-                    className='bg-sandbrown rounded'
-                >
-                    Order Now
-                </Button>
-            </div>
-        )
-    }
-
 
 
     return (
@@ -143,6 +149,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                             from-sandbrown to-[#f4a261]">
                                 <span className="text-2xl">
                                     <Image
+                                    onClick={()=>router.push('/')}
                                         alt='Burger'
                                         src={'/Cheeseburger.png'}
                                         width={40}
@@ -183,7 +190,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                 <p className="text-neutral-400 text-sm mb-2">{customer.email}</p>
                                 <span className="inline-block px-4 py-1 rounded-full text-sm font-medium text-white
                                  bg-gradient-to-r from-sandbrown to-[#f4a261]">
-                                    {orders.length < 10 ? 'Bronze Member' : "Gold Member"}
+                                    {orders.length < 6 ? 'Bronze Member' : "Gold Member"}
                                 </span>
                             </div>
 
@@ -215,7 +222,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     <Heart className="w-5 h-5 mr-3" />
                                     Favorites
                                 </button> */}
-                                <button
+                                {/* <button
                                     onClick={() => setActiveTab('rewards')}
                                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
                                         ${activeTab === 'rewards' ? 'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
@@ -223,7 +230,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                 >
                                     <Award className="w-5 h-5 mr-3" />
                                     Rewards
-                                </button>
+                                </button> */}
                                 <button
                                     onClick={() => setActiveTab('settings')}
                                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
@@ -269,10 +276,10 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             from-sandbrown to-[#f4a261]">
                                                 <ShoppingBag className="w-6 h-6 text-white" />
                                             </div>
-                                            <span className="text-green-400 text-sm font-medium">+12%</span>
+                                            <span className="text-green-400 text-sm font-medium">+{orders.length}%</span>
                                         </div>
                                         <h3 className="text-neutral-400 text-sm mb-1">Total Orders</h3>
-                                        <p className="text-white text-3xl font-bold">24</p>
+                                        <p className="text-white text-3xl font-bold">{orders.length}</p>
                                     </div>
 
                                     <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
@@ -281,7 +288,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             from-sandbrown to-[#f4a261]">
                                                 <Award className="w-6 h-6 text-white" />
                                             </div>
-                                            <span className="text-green-400 text-sm font-medium">+250</span>
+                                            <span className="text-green-400 text-sm font-medium">+10</span>
                                         </div>
                                         <h3 className="text-neutral-400 text-sm mb-1">Reward Points</h3>
                                         <p className="text-white text-3xl font-bold">{orders.length}</p>
@@ -293,7 +300,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             from-sandbrown to-[#f4a261]">
                                                 <Star className="w-6 h-6 text-white" />
                                             </div>
-                                            <span className="text-green-400 text-sm font-medium">Gold</span>
+                                            <span className="text-green-400 text-sm font-medium"> {orders.length < 6 ? 'Bronze' : "Gold"}</span>
                                         </div>
                                         <h3 className="text-neutral-400 text-sm mb-1">Member Since</h3>
                                         <p className="text-white text-xl font-bold">{customer.createdAt}</p>
@@ -304,17 +311,35 @@ const UserClient = ({ userId }: { userId: string }) => {
                                 <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                                     <div className="flex items-center justify-between mb-6">
                                         <h2 className="text-white text-xl font-bold">Recent Orders</h2>
-                                        <button className="text-sandbrown text-sm font-medium hover:text-white transition-colors">
+                                        <button
+                                            onClick={() => setActiveTab('orders')}
+                                            className="text-sandbrown text-sm font-medium hover:text-white transition-colors">
                                             View All
                                         </button>
                                     </div>
                                     <div className="space-y-4">
-                                        {orders.map((order) => (
+                                        {recentOrder.map((order) => (
                                             <div key={order._id} className="flex items-center justify-between p-4 bg-neutral-700/30 
                                             rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
                                                 <div className="flex items-center space-x-4">
+
+                                                    {
+                                                        orders.length === 0 && (
+
+                                                            <div className='flex flex-col gap-4 justify-center items-center'>
+                                                                <p className="text-neutral-400 text-center">No recent orders found.</p>
+                                                                <Button
+                                                                    onClick={() => router.push('/order-delivery')}
+                                                                    className='bg-sandbrown rounded'
+                                                                >
+                                                                    Order Now
+                                                                </Button>
+                                                            </div>
+                                                        )
+                                                    }
                                                     <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl 
-                                                    bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                                    bg-gradient-to-r from-sandbrown to-[#f4a261]"
+                                                    >
                                                         <Image
                                                             alt='Burger'
                                                             src={'/Cheeseburger.png'}
@@ -325,7 +350,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                     </div>
                                                     <div>
                                                         <p className="text-white font-medium">{order._id}</p>
-                                                        <p className="text-neutral-400 text-sm">
+                                                        <div className="text-neutral-400 text-sm">
                                                             {order.items.map((item, index) => (
                                                                 <div key={index} className="border-b py-2">
                                                                     <p><strong>{item.name}</strong> x {item.quantity}</p>
@@ -341,17 +366,19 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                                     <p>Item Total: {formatNaira(item.itemTotal)}</p>
                                                                 </div>
                                                             ))}
-                                                        </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-white font-bold">{order.total}</p>
+                                                    <p className="text-white font-bold">{formatNaira(order.total)}</p>
                                                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
                                                         ${getStatusColor(order.status)}`}>
                                                         {order.status}
                                                     </span>
                                                 </div>
                                             </div>
+
+
                                         ))}
                                     </div>
                                 </div>
@@ -482,7 +509,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                 <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
 
                                                 </span>
-                                                <span className="text-white font-bold">{order.total}</span>
+                                                <span className="text-white font-bold">{formatNaira(order.total)}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -512,7 +539,9 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             rounded-lg text-white focus:outline-none focus:border-sandbrown transition-colors"
                                         />
                                     </div>
-                                    <button className="w-full py-3 rounded-lg font-medium text-white bg-gradient-to-r 
+                                    <button
+                                        onClick={() => updateCustomerDetails({ email: customer.email, fullname: customer.fullname })}
+                                        className="w-full py-3 rounded-lg font-medium text-white bg-gradient-to-r 
                                     from-sandbrown to-[#f4a261] hover:scale-105 transition-all">
                                         Save Changes
                                     </button>

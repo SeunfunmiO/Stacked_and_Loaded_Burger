@@ -160,19 +160,59 @@ export const getCustomer = async () => {
     }
 }
 
-// export const updateCustomerDetails = async () => {
-//     try {
-//         await dbConnect()
+export const updateUser = async (data: {
+    email: string,
+   fullname:string
+}) => {
+    await dbConnect();
 
-//         const customer = await UserModel.findByIdAndUpdate()
-//     } catch (error) {
-//         console.error("Get Updating customer details  : ", error);
-//         return {
-//             success: false,
-//             message: "Internal server error"
-//         }
-//     }
-// }
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No token found" };
+        }
+
+        const decrypted = await decrypt(token);
+
+        if (!decrypted.success) {
+            return { success: false, message: "Session expired" };
+        }
+
+        const existingUser = await UserModel.findById(decrypted._id);
+
+        if (!existingUser) {
+            return { success: false, message: "User not found" };
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            decrypted._id,
+            {
+                email: data.email,
+                fullname: data.fullname,
+            },
+            { new: true }
+        );
+
+        const plainUser = JSON.parse(JSON.stringify(updatedUser))
+
+        revalidatePath("/user/user-dashboard");
+
+        return {
+            success: true,
+            message: "Profile updated",
+            user: plainUser
+        };
+
+    } catch (error) {
+        console.log("Update user error : ", error);
+        return { success: false, message: "Error updating user" };
+    }
+};
+
+
+    
 
 export const logOut = async () => {
     try {

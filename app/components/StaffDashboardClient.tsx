@@ -1,7 +1,6 @@
-// app/staff/dashboard/page.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ShoppingBag,
     Users,
@@ -17,50 +16,126 @@ import {
     Filter,
     MoreVertical,
     User2,
-    UserCheck2,
-    ListOrdered
+    ThumbsUp,
+    Bike
 } from 'lucide-react';
-import {
-    StaffOrder, StaffTabType,
-
-} from '@/lib/type';
-import Image from 'next/image';
+import { IOrder, StaffTabType } from '@/lib/type';
 import { useRouter } from 'next/navigation';
-import { NairaIcon } from '@/app/components/NairaIcon';
-import { orders, staffMembers, stats } from '@/lib/MapItems';
+import { formatNaira, NairaIcon } from '@/app/components/NairaIcon';
+import { staffMembers } from '@/lib/MapItems';
+import { getAllOrders, updateOrderStatus } from '@/lib/actions';
+import { toast } from 'react-toastify';
 
 const StaffDashboardClient = () => {
     const [activeTab, setActiveTab] = useState<StaffTabType>('orders');
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const router = useRouter()
+    const [orders, setOrders] = useState<IOrder[]>([]);
+    const [activeOrders, setActiveOrders] = useState<IOrder[]>([]);
+    const [statsState, setStatsState] = useState({
+        revenue: 0,
+        revenueTrend: '',
+        customersToday: 0,
+        ordersTrend: ''
+    });
+    const router = useRouter();
 
+    // Fetch orders and compute stats
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const res = await getAllOrders();
 
-    const getStatusColor = (status: StaffOrder['status']): string => {
+                if (!res.success) {
+                    return toast.error(res.message);
+                }
+
+                setOrders(res.data);
+
+                // Active orders
+                const active = res.data.filter(
+                    (order: IOrder) =>
+                        ['pending', 'preparing', 'confirmed', 'out-for-delivery'].includes(order.status)
+                );
+                setActiveOrders(active);
+
+                // Revenue today
+                const today = new Date();
+                const revenueOrders = res.data.filter(
+                    (order: IOrder) =>
+                        new Date(order.createdAt).toDateString() === today.toDateString() &&
+                        order.status === 'delivered'
+                );
+                const totalRevenue = revenueOrders.reduce((total: number, order: IOrder) => total + order.total, 0);
+
+                // Revenue yesterday
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const previousRevenueOrders = res.data.filter(
+                    (order: IOrder) =>
+                        new Date(order.createdAt).toDateString() === yesterday.toDateString() &&
+                        order.status === 'delivered'
+                );
+                const previousRevenue = previousRevenueOrders.reduce((total: number, order: IOrder) => total + order.total, 0);
+
+                const revenuePercentage =
+                    previousRevenue === 0
+                        ? 100
+                        : ((totalRevenue - previousRevenue) / previousRevenue) * 100;
+
+                // Customers today
+                const customersSet = new Set();
+                res.data.forEach((order: IOrder) => {
+                    if (new Date(order.createdAt).toDateString() === today.toDateString()) {
+                        customersSet.add(order.user);
+                    }
+                });
+
+                setStatsState({
+                    revenue: totalRevenue,
+                    revenueTrend: `${revenuePercentage.toFixed(2)}% ${revenuePercentage >= 0 ? '↑' : '↓'
+                        } from yesterday`,
+                    customersToday: customersSet.size,
+                    ordersTrend: '' // can compute if needed
+                });
+            } catch (error) {
+                console.error(error);
+                toast.error('Failed to fetch orders');
+            }
+        };
+
+        fetchOrders();
+    }, []);
+
+    const getStatusColor = (status: IOrder['status']): string => {
         switch (status) {
             case 'pending':
-                return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+                return 'bg-yellow-500/20 text-green-400';
+            case 'out-for-delivery':
+                return 'bg-sandbrown-500/20 text-sandbrown-400';
+            case 'confirmed':
+                return 'bg-green-500/20 text-green-400';
+            case 'delivered':
+                return 'bg-green-500/20 text-green-400';
             case 'preparing':
-                return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-            case 'ready':
-                return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-            case 'completed':
-                return 'bg-green-500/20 text-green-400 border-green-500/30';
+                return 'bg-yellow-500/20 text-yellow-400';
             case 'cancelled':
-                return 'bg-red-500/20 text-red-400 border-red-500/30';
+                return 'bg-red-500/20 text-red-400';
             default:
-                return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
+                return 'bg-neutral-500/20 text-neutral-400';
         }
     };
 
-    const getStatusIcon = (status: StaffOrder['status']) => {
+    const getStatusIcon = (status: IOrder['status']) => {
         switch (status) {
             case 'pending':
                 return <Clock className="w-4 h-4" />;
             case 'preparing':
                 return <ChefHat className="w-4 h-4" />;
-            case 'ready':
-                return <Package className="w-4 h-4" />;
-            case 'completed':
+            case 'confirmed':
+                return <ThumbsUp className="w-4 h-4" />;
+            case 'out-for-delivery':
+                return <Bike className="w-4 h-4" />;
+            case 'delivered':
                 return <CheckCircle className="w-4 h-4" />;
             case 'cancelled':
                 return <XCircle className="w-4 h-4" />;
@@ -69,224 +144,192 @@ const StaffDashboardClient = () => {
         }
     };
 
-    const handleStatusChange = (orderId: string, newStatus: StaffOrder['status']) => {
-        console.log(`Order ${orderId} status changed to ${newStatus}`);
-        // Implement status change logic here
+    const handleStatusChange = async (orderId: string, newStatus: IOrder['status']) => {
+        try {
+            await updateOrderStatus(orderId, newStatus); // pass newStatus if needed
+            setOrders((prev) =>
+                prev.map((order) =>
+                    order._id === orderId ? { ...order, status: newStatus } : order
+                )
+            );
+
+            setActiveOrders((prev) =>
+                prev.map((order) =>
+                    order._id === orderId ? { ...order, status: newStatus } : order
+                )
+            );
+
+            toast.success('Order status updated!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to update order');
+        }
     };
 
-  return (
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-[#dc9457] to-[#f4a261]">
-                          <ShoppingBag className="w-6 h-6 text-white" />
-                      </div>
-                      <span className="text-green-400 text-sm font-medium">{stats.ordersTrend}</span>
-                  </div>
-                  <h3 className="text-neutral-400 text-sm mb-1">Total Orders</h3>
-                  <p className="text-white text-3xl font-bold">{stats.totalOrders}</p>
-              </div>
+    return (
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-[#dc9457] to-[#f4a261]">
+                            <ShoppingBag className="w-6 h-6 text-white" />
+                        </div>
+                        <span className="text-green-400 text-sm font-medium">{statsState.ordersTrend}</span>
+                    </div>
+                    <h3 className="text-neutral-400 text-sm mb-1">Total Orders</h3>
+                    <p className="text-white text-3xl font-bold">{orders.length}</p>
+                </div>
 
-              <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-400">
-                          <Clock className="w-6 h-6 text-white" />
-                      </div>
-                      <span className="text-yellow-400 text-sm font-medium">Live</span>
-                  </div>
-                  <h3 className="text-neutral-400 text-sm mb-1">Active Orders</h3>
-                  <p className="text-white text-3xl font-bold">{stats.activeOrders}</p>
-              </div>
+                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-400">
+                            <Clock className="w-6 h-6 text-white" />
+                        </div>
+                        <span className="text-yellow-400 text-sm font-medium">Live</span>
+                    </div>
+                    <h3 className="text-neutral-400 text-sm mb-1">Active Orders</h3>
+                    <p className="text-white text-3xl font-bold">{activeOrders.length}</p>
+                </div>
 
-              <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-green-500 to-green-400">
-                          <NairaIcon />
-                      </div>
-                      <span className="text-green-400 text-sm font-medium">{stats.revenueTrend}</span>
-                  </div>
-                  <h3 className="text-neutral-400 text-sm mb-1">Today&apos;s Revenue</h3>
-                  <p className="text-white text-3xl font-bold">{stats.revenue}</p>
-              </div>
+                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-green-500 to-green-400">
+                            <NairaIcon />
+                        </div>
+                        <span className="text-green-400 text-sm font-medium">{statsState.revenueTrend}</span>
+                    </div>
+                    <h3 className="text-neutral-400 text-sm mb-1">Today's Revenue</h3>
+                    <p className="text-white text-3xl font-bold">{formatNaira(statsState.revenue)}</p>
+                </div>
 
-              <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-purple-400">
-                          <Users className="w-6 h-6 text-white" />
-                      </div>
-                      <span className="text-green-400 text-sm font-medium">+5</span>
-                  </div>
-                  <h3 className="text-neutral-400 text-sm mb-1">Customers Today</h3>
-                  <p className="text-white text-3xl font-bold">{stats.customers}</p>
-              </div>
-          </div>
+                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-purple-400">
+                            <Users className="w-6 h-6 text-white" />
+                        </div>
+                        <span className="text-green-400 text-sm font-medium">+{statsState.customersToday}</span>
+                    </div>
+                    <h3 className="text-neutral-400 text-sm mb-1">Customers Today</h3>
+                    <p className="text-white text-3xl font-bold">{statsState.customersToday}</p>
+                </div>
+            </div>
 
-          {/* Main Content Area */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Orders Section - Takes 8 columns */}
-              <div className="lg:col-span-8">
-                  <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-6">
-                          <h2 className="text-white text-xl font-bold">Active Orders</h2>
-                          <div className="flex items-center space-x-3">
-                              <div className="relative">
-                                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
-                                  <input
-                                      type="text"
-                                      placeholder="Search orders..."
-                                      value={searchQuery}
-                                      onChange={(e) => setSearchQuery(e.target.value)}
-                                      className="pl-10 pr-4 py-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#dc9457] transition-colors"
-                                  />
-                              </div>
-                              <button className="p-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-neutral-400 hover:text-white hover:border-neutral-600 transition-all">
-                                  <Filter className="w-5 h-5" />
-                              </button>
-                          </div>
-                      </div>
+            {/* Orders List */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="lg:col-span-8">
+                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-white text-xl font-bold">Active Orders</h2>
+                            <div className="flex items-center space-x-3">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search orders..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-10 pr-4 py-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#dc9457] transition-colors"
+                                    />
+                                </div>
+                                <button className="p-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-neutral-400 hover:text-white hover:border-neutral-600 transition-all">
+                                    <Filter className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
 
-                      {/* Orders List */}
-                      <div className="space-y-4">
-                          {orders.map((order) => (
-                              <div
-                                  key={order.id}
-                                  className={`p-4 bg-neutral-700/30 rounded-xl border ${order.priority === 'urgent' ? 'border-red-500/30 bg-red-500/5' : 'border-neutral-700'
-                                      } hover:border-neutral-600 transition-all`}
-                              >
-                                  <div className="flex items-start justify-between mb-3">
-                                      <div className="flex-1">
-                                          <div className="flex items-center space-x-3 mb-2">
-                                              <h3 className="text-white font-bold">{order.id}</h3>
-                                              {order.priority === 'urgent' && (
-                                                  <span className="px-2 py-1 bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium rounded">
-                                                      URGENT
-                                                  </span>
-                                              )}
-                                              <span className="text-neutral-500 text-sm">{order.time}</span>
-                                          </div>
-                                          <p className="text-neutral-300 font-medium mb-1">{order.customerName}</p>
-                                          <p className="text-neutral-400 text-sm">{order.items}</p>
-                                      </div>
-                                      <div className="text-right">
-                                          <p className="text-white font-bold text-lg mb-2">{order.total}</p>
-                                          <button className="text-neutral-400 hover:text-white transition-colors">
-                                              <MoreVertical className="w-5 h-5" />
-                                          </button>
-                                      </div>
-                                  </div>
+                        <div className="space-y-4">
+                            {activeOrders.map((order) => (
+                                <div
+                                    key={order._id}
+                                    className={`p-4 bg-neutral-700/30 rounded-xl border hover:border-neutral-600 transition-all`}
+                                >
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <h3 className="text-white font-bold">{order._id}</h3>
+                                                <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleString()}</span>
+                                            </div>
+                                            <p className="text-neutral-300 font-medium mb-1">{order.user}</p>
+                                            <p className="text-neutral-400 text-sm">
+                                                {order.items.map((item, index) => (
+                                                    <div key={index} className="border-b py-2">
+                                                        <p><strong>{item.name}</strong> x {item.quantity}</p>
+                                                        <p>Meat: {item.meatType}</p>
+                                                        <p>Side: {item.side}</p>
+                                                        <p>Beverage: {item.beverage}</p>
+                                                        {item.toppings.length > 0 && (
+                                                            <p>
+                                                                Toppings: {item.toppings.map(t => `${t.name} (${formatNaira(t.price)})`).join(', ')}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-white font-bold text-lg mb-2">{formatNaira(order.total)}</p>
+                                            <button className="text-neutral-400 hover:text-white transition-colors">
+                                                <MoreVertical className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    </div>
 
-                                  {/* Status and Actions */}
-                                  <div className="flex items-center justify-between pt-3 border-t border-neutral-700">
-                                      <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
-                                          {getStatusIcon(order.status)}
-                                          <span className="text-sm font-medium capitalize">{order.status}</span>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                          <button
-                                              onClick={() => handleStatusChange(order.id, 'preparing')}
-                                              className="px-4 py-1.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg text-sm font-medium hover:bg-blue-500/30 transition-all"
-                                              disabled={order.status === 'completed' || order.status === 'cancelled'}
-                                          >
-                                              Prepare
-                                          </button>
-                                          <button
-                                              onClick={() => handleStatusChange(order.id, 'ready')}
-                                              className="px-4 py-1.5 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/30 transition-all"
-                                              disabled={order.status === 'completed' || order.status === 'cancelled'}
-                                          >
-                                              Ready
-                                          </button>
-                                          <button
-                                              onClick={() => handleStatusChange(order.id, 'completed')}
-                                              className="px-4 py-1.5 bg-green-500/20 border border-green-500/30 text-green-400 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-all"
-                                              disabled={order.status === 'completed' || order.status === 'cancelled'}
-                                          >
-                                              Complete
-                                          </button>
-                                      </div>
-                                  </div>
-                              </div>
-                          ))}
-                      </div>
-                  </div>
-              </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-neutral-700">
+                                        <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
+                                            {getStatusIcon(order.status)}
+                                            <span className="text-sm font-medium capitalize">{order.status}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            {['confirmed', 'preparing', 'out-for-delivery', 'delivered'].map((statusOption) => (
+                                                <button
+                                                    key={statusOption}
+                                                    onClick={() => handleStatusChange(order._id, statusOption as IOrder['status'])}
+                                                    className="px-4 py-1.5 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/30 transition-all"
+                                                    disabled={['delivered', 'cancelled'].includes(order.status)}
+                                                >
+                                                    {statusOption.replace(/-/g, ' ')}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
 
-              {/* Staff & Quick Actions - Takes 4 columns */}
-              <div className="lg:col-span-4 space-y-6">
-                  {/* Staff on Duty */}
-                  <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                      <h2 className="text-white text-xl font-bold mb-6">Staff on Duty</h2>
-                      <div className="space-y-4">
-                          {staffMembers.map((staff) => (
-                              <div key={staff.id} className="flex items-center justify-between p-3 bg-neutral-700/30 rounded-lg border border-neutral-700">
-                                  <div className="flex items-center space-x-3">
-                                      <div className="relative">
-                                          <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-neutral-600">
-                                              {staff.avatar}
-                                          </div>
-                                          <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-neutral-800 ${staff.status === 'active' ? 'bg-green-500' : 'bg-neutral-500'
-                                              }`}></span>
-                                      </div>
-                                      <div>
-                                          <p className="text-white font-medium">{staff.name}</p>
-                                          <p className="text-neutral-400 text-xs">{staff.role}</p>
-                                      </div>
-                                  </div>
-                                  <div className="text-right">
-                                      <p className="text-[#dc9457] font-bold">{staff.ordersCompleted}</p>
-                                      <p className="text-neutral-500 text-xs">orders</p>
-                                  </div>
-                              </div>
-                          ))}
-                      </div>
-                  </div>
+                {/* Staff Quick Actions */}
+                <div className="lg:col-span-4 space-y-6">
+                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                        <h2 className="text-white text-xl font-bold mb-6">Staff on Duty</h2>
+                        <div className="space-y-4">
+                            {staffMembers.map((staff) => (
+                                <div key={staff.id} className="flex items-center justify-between p-3 bg-neutral-700/30 rounded-lg border border-neutral-700">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="relative">
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-neutral-600">
+                                                {staff.avatar}
+                                            </div>
+                                            <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-neutral-800 ${staff.status === 'active' ? 'bg-green-500' : 'bg-neutral-500'}`}></span>
+                                        </div>
+                                        <div>
+                                            <p className="text-white font-medium">{staff.name}</p>
+                                            <p className="text-neutral-400 text-xs">{staff.role}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[#dc9457] font-bold">{staff.ordersCompleted}</p>
+                                        <p className="text-neutral-500 text-xs">orders</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-                  {/* Quick Actions */}
-                  <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                      <h2 className="text-white text-xl font-bold mb-4">Quick Actions</h2>
-                      <div className="space-y-3">
-                          <button
-                              onClick={() => router.push('/staff/manage-order')}
-                              className="w-full py-3 px-4 bg-gradient-to-r from-[#dc9457] to-[#f4a261] text-white rounded-lg font-medium hover:scale-105 transition-all flex items-center justify-center">
-                              <ChefHat className="w-5 h-5 mr-2" />
-                              Customer Orders
-                          </button>
-                          <button
-                              onClick={() => router.push('/staff/manage-menu')}
-                              className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700 
-                text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
-                              <Package className="w-5 h-5 mr-2" />
-                              Manage Menu
-                          </button>
-                          <button
-                              onClick={() => router.push('/staff/manage-menu-options')}
-                              className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700 
-                text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
-                              <ListOrdered className="w-5 h-5 mr-2" />
-                              Manage Menu Options
-                          </button>
-                          <button className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700 
-                text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
-                              <TrendingUp className="w-5 h-5 mr-2" />
-                              View Reports
-                          </button>
-                          <button
-                              onClick={() => router.push('/user/user-dashboard')}
-                              className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700 
-                text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
-                              <User2 className="w-5 h-5 mr-2" />
-                              Customer Dashboard
-                          </button>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-
-  )
-}
-
-export default StaffDashboardClient
+export default StaffDashboardClient;
