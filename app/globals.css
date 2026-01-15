@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme{
+  --color-sandbrown:#dc9457
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
