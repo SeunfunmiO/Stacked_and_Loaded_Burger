@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-};
-module.exports = {
   images: {
     remotePatterns: [
       {
@@ -21,5 +19,5 @@ module.exports = {
       bodySizeLimit: '5mb', // increase as needed
     },
   },
-}
-
+};
+module.exports = nextConfig;

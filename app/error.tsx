@@ -46,7 +46,7 @@ const Error = ({ error, reset }: { error: Error; reset: () => void }) => {
                         Oops! Something Went Wrong
                     </h1>
                     <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                        Don't worry, even the best burgers get a little messy sometimes. Let's try to fix this!
+                        Don&apos;t worry, even the best burgers get a little messy sometimes. Let&apos;s try to fix this!
                     </p>
 
                     {/* Error Details (optional, for debugging) */}
@@ -119,7 +119,7 @@ const Error = ({ error, reset }: { error: Error; reset: () => void }) => {
                 {/* Info Card */}
                 <div className="mt-8 p-6 bg-gradient-to-r from-sandbrown/10 to-[#f4a261]/10 dark:from-sandbrown/5 dark:to-[#f4a261]/5 border border-sandbrown/20 dark:border-sandbrown/10 rounded-2xl">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-semibold">Don't worry!</span> This is just a temporary hiccup.
+                        <span className="font-semibold">Don&apos;t worry!</span> This is just a temporary hiccup.
                         Your order history and account are safe. If this keeps happening, please reach out to our support team. 🍟
                     </p>
                 </div>

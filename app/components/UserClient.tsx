@@ -116,93 +116,97 @@ const UserClient = ({ userId }: { userId: string }) => {
         }
     };
 
-    if (orders.length === 0 && (
-        <div className='flex justify-center items-center'>
-            No order yet
-
-            <Button
-                onClick={() => router.push('/order-delivery')}
-                className='bg-sandbrown rounded'
-            >
-                Order Now
-            </Button>
-        </div>
-    ))
-
+    if (orders.length === 0) {
         return (
-            <div>
-                <nav className="bg-neutral-800/50 backdrop-blur-xl border-b border-neutral-700">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-between h-16">
-                            <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r 
+            <div className='flex justify-center items-center'>
+                No order yet
+
+                <Button
+                    onClick={() => router.push('/order-delivery')}
+                    className='bg-sandbrown rounded'
+                >
+                    Order Now
+                </Button>
+            </div>
+        )
+    }
+
+
+
+    return (
+        <div>
+            <nav className="bg-neutral-800/50 backdrop-blur-xl border-b border-neutral-700">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        <div className="flex items-center">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r 
                             from-sandbrown to-[#f4a261]">
-                                    <span className="text-2xl">
-                                        <Image
-                                            alt='Burger'
-                                            src={'/Cheeseburger.png'}
-                                            width={40}
-                                            height={40}
-                                        />
-                                    </span>
-                                </div>
-                                <span className="ml-3 text-white font-bold text-xl">Stacked & Loaded Burger</span>
+                                <span className="text-2xl">
+                                    <Image
+                                        alt='Burger'
+                                        src={'/Cheeseburger.png'}
+                                        width={40}
+                                        height={40}
+                                    />
+                                </span>
                             </div>
-                            <div className="flex items-center space-x-4">
-                                <button className="text-neutral-400 hover:text-white transition-colors relative">
-                                    <Bell className="w-6 h-6" />
-                                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                                </button>
-                                <div className="flex items-center space-x-3 cursor-pointer">
-                                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white 
+                            <span className="ml-3 text-white font-bold text-xl">Stacked & Loaded Burger</span>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <button className="text-neutral-400 hover:text-white transition-colors relative">
+                                <Bell className="w-6 h-6" />
+                                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                            </button>
+                            <div className="flex items-center space-x-3 cursor-pointer">
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white 
                                 bg-gradient-to-r from-sandbrown to-[#f4a261]">
-                                        <User className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-white font-medium hidden sm:block">{customer.fullname}</span>
+                                    <User className="w-5 h-5" />
                                 </div>
+                                <span className="text-white font-medium hidden sm:block">{customer.fullname}</span>
                             </div>
                         </div>
                     </div>
-                </nav>
+                </div>
+            </nav>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        {/* Sidebar */}
-                        <div className="lg:col-span-3">
-                            <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                <div className="text-center mb-6">
-                                    <div className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center 
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Sidebar */}
+                    <div className="lg:col-span-3">
+                        <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                            <div className="text-center mb-6">
+                                <div className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center 
                                 text-white text-3xl bg-gradient-to-r from-sandbrown to-[#f4a261]">
-                                        <User className="w-12 h-12" />
-                                    </div>
-                                    <h2 className="text-white font-bold text-xl mb-1">{customer.fullname}</h2>
-                                    <p className="text-neutral-400 text-sm mb-2">{customer.email}</p>
-                                    <span className="inline-block px-4 py-1 rounded-full text-sm font-medium text-white
-                                 bg-gradient-to-r from-sandbrown to-[#f4a261]">
-                                        {orders.length < 10 ? 'Bronze Member' : "Gold Member"}
-                                    </span>
+                                    <User className="w-12 h-12" />
                                 </div>
+                                <h2 className="text-white font-bold text-xl mb-1">{customer.fullname}</h2>
+                                <p className="text-neutral-400 text-sm mb-2">{customer.email}</p>
+                                <span className="inline-block px-4 py-1 rounded-full text-sm font-medium text-white
+                                 bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                    {orders.length < 10 ? 'Bronze Member' : "Gold Member"}
+                                </span>
+                            </div>
 
-                                <nav className="space-y-2">
-                                    <button
-                                        onClick={() => setActiveTab('overview')}
-                                        className={`w-full flex items-center px-4 py-3 rounded-lg transition-all ${activeTab === 'overview' ?
-                                            'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
-                                            }`}
-                                    >
-                                        <TrendingUp className="w-5 h-5 mr-3" />
-                                        Overview
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('orders')}
-                                        className={`w-full flex items-center px-4 py-3 rounded-lg transition-all ${activeTab === 'orders' ?
-                                            'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
-                                            }`}
-                                    >
-                                        <ShoppingBag className="w-5 h-5 mr-3" />
-                                        My Orders
-                                    </button>
-                                    {/* <button
+                            <nav className="space-y-2">
+                                <button
+                                    onClick={() => setActiveTab('overview')}
+                                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-all ${activeTab === 'overview' ?
+                                        'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
+                                        }`}
+                                >
+                                    <TrendingUp className="w-5 h-5 mr-3" />
+                                    Overview
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('orders')}
+                                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-all ${activeTab === 'orders' ?
+                                        'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
+                                        }`}
+                                >
+                                    <ShoppingBag className="w-5 h-5 mr-3" />
+                                    My Orders
+                                </button>
+                                {/* <button
                                     onClick={() => setActiveTab('favorites')}
                                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-all ${activeTab === 'favorites' ?
                                         'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
@@ -211,174 +215,174 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     <Heart className="w-5 h-5 mr-3" />
                                     Favorites
                                 </button> */}
-                                    <button
-                                        onClick={() => setActiveTab('rewards')}
-                                        className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
+                                <button
+                                    onClick={() => setActiveTab('rewards')}
+                                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
                                         ${activeTab === 'rewards' ? 'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
-                                            }`}
-                                    >
-                                        <Award className="w-5 h-5 mr-3" />
-                                        Rewards
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('settings')}
-                                        className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
+                                        }`}
+                                >
+                                    <Award className="w-5 h-5 mr-3" />
+                                    Rewards
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('settings')}
+                                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-all 
                                         ${activeTab === 'settings' ? 'bg-neutral-700 text-white' : 'text-neutral-400 hover:bg-neutral-700/50 hover:text-white'
-                                            }`}
-                                    >
-                                        <Settings className="w-5 h-5 mr-3" />
-                                        Settings
-                                    </button>
-                                    <button
-                                        onClick={() => handleLogOut()}
-                                        className="w-full flex items-center px-4 py-3 rounded-lg text-neutral-400 hover:bg-neutral-700/50 
+                                        }`}
+                                >
+                                    <Settings className="w-5 h-5 mr-3" />
+                                    Settings
+                                </button>
+                                <button
+                                    onClick={() => handleLogOut()}
+                                    className="w-full flex items-center px-4 py-3 rounded-lg text-neutral-400 hover:bg-neutral-700/50 
                                     hover:text-red-400 transition-all">
-                                        <LogOut className="w-5 h-5 mr-3" />
-                                        Logout
-                                    </button>
+                                    <LogOut className="w-5 h-5 mr-3" />
+                                    Logout
+                                </button>
 
-                                    {
-                                        customer.isAdmin === true && (
-                                            <Link
-                                                href={'/staff/staff-dashboard'}
-                                                className="w-full flex items-center px-4 py-3 rounded-lg text-neutral-400 hover:bg-neutral-700/50 
+                                {
+                                    customer.isAdmin === true && (
+                                        <Link
+                                            href={'/staff/staff-dashboard'}
+                                            className="w-full flex items-center px-4 py-3 rounded-lg text-neutral-400 hover:bg-neutral-700/50 
                                          hover:text-white-400 transition-all"
-                                            >
-                                                <ChefHat className="w-5 h-5 mr-3" />
-                                                Staff Panel
-                                            </Link>
-                                        )
-                                    }
-                                </nav>
-                            </div>
+                                        >
+                                            <ChefHat className="w-5 h-5 mr-3" />
+                                            Staff Panel
+                                        </Link>
+                                    )
+                                }
+                            </nav>
                         </div>
+                    </div>
 
-                        {/* Main Content */}
-                        <div className="lg:col-span-9">
-                            {activeTab === 'overview' && (
-                                <div className="space-y-6">
-                                    {/* Stats Cards */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
-                                            from-sandbrown to-[#f4a261]">
-                                                    <ShoppingBag className="w-6 h-6 text-white" />
-                                                </div>
-                                                <span className="text-green-400 text-sm font-medium">+12%</span>
-                                            </div>
-                                            <h3 className="text-neutral-400 text-sm mb-1">Total Orders</h3>
-                                            <p className="text-white text-3xl font-bold">24</p>
-                                        </div>
-
-                                        <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
-                                            from-sandbrown to-[#f4a261]">
-                                                    <Award className="w-6 h-6 text-white" />
-                                                </div>
-                                                <span className="text-green-400 text-sm font-medium">+250</span>
-                                            </div>
-                                            <h3 className="text-neutral-400 text-sm mb-1">Reward Points</h3>
-                                            <p className="text-white text-3xl font-bold">{orders.length}</p>
-                                        </div>
-
-                                        <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
-                                            from-sandbrown to-[#f4a261]">
-                                                    <Star className="w-6 h-6 text-white" />
-                                                </div>
-                                                <span className="text-green-400 text-sm font-medium">Gold</span>
-                                            </div>
-                                            <h3 className="text-neutral-400 text-sm mb-1">Member Since</h3>
-                                            <p className="text-white text-xl font-bold">{customer.createdAt}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Recent Orders */}
+                    {/* Main Content */}
+                    <div className="lg:col-span-9">
+                        {activeTab === 'overview' && (
+                            <div className="space-y-6">
+                                {/* Stats Cards */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <h2 className="text-white text-xl font-bold">Recent Orders</h2>
-                                            <button className="text-sandbrown text-sm font-medium hover:text-white transition-colors">
-                                                View All
-                                            </button>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
+                                            from-sandbrown to-[#f4a261]">
+                                                <ShoppingBag className="w-6 h-6 text-white" />
+                                            </div>
+                                            <span className="text-green-400 text-sm font-medium">+12%</span>
                                         </div>
-                                        <div className="space-y-4">
-                                            {orders.map((order) => (
-                                                <div key={order._id} className="flex items-center justify-between p-4 bg-neutral-700/30 
-                                            rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
-                                                    <div className="flex items-center space-x-4">
-                                                        <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl 
-                                                    bg-gradient-to-r from-sandbrown to-[#f4a261]">
-                                                            <Image
-                                                                alt='Burger'
-                                                                src={'/Cheeseburger.png'}
-                                                                width={40}
-                                                                height={40}
-                                                            />
-
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-white font-medium">{order._id}</p>
-                                                            <p className="text-neutral-400 text-sm">
-                                                                {order.items.map((item, index) => (
-                                                                    <div key={index} className="border-b py-2">
-                                                                        <p><strong>{item.name}</strong> x {item.quantity}</p>
-                                                                        <p>Meat: {item.meatType}</p>
-                                                                        <p>Side: {item.side}</p>
-                                                                        <p>Beverage: {item.beverage}</p>
-                                                                        {item.toppings.length > 0 && (
-                                                                            <p>
-                                                                                Toppings: {item.toppings.map(t => `${t.name} 
-                                                                                (${formatNaira(t.price)})`).join(', ')}
-                                                                            </p>
-                                                                        )}
-                                                                        <p>Item Total: {formatNaira(item.itemTotal)}</p>
-                                                                    </div>
-                                                                ))}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <p className="text-white font-bold">{order.total}</p>
-                                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
-                                                        ${getStatusColor(order.status)}`}>
-                                                            {order.status}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <h3 className="text-neutral-400 text-sm mb-1">Total Orders</h3>
+                                        <p className="text-white text-3xl font-bold">24</p>
                                     </div>
 
-                                    {/* Quick Actions */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
-                                    hover:border-neutral-600 transition-all cursor-pointer">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h3 className="text-white font-bold text-lg mb-2">Order Again</h3>
-                                                    <p className="text-neutral-400 text-sm">Reorder your favorites in seconds</p>
-                                                </div>
-                                                <ChevronRight className="w-6 h-6 text-neutral-400" />
+                                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
+                                            from-sandbrown to-[#f4a261]">
+                                                <Award className="w-6 h-6 text-white" />
                                             </div>
+                                            <span className="text-green-400 text-sm font-medium">+250</span>
                                         </div>
-                                        <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
-                                    hover:border-neutral-600 transition-all cursor-pointer">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h3 className="text-white font-bold text-lg mb-2">Track Order</h3>
-                                                    <p className="text-neutral-400 text-sm">See where your burger is now</p>
-                                                </div>
-                                                <ChevronRight className="w-6 h-6 text-neutral-400" />
+                                        <h3 className="text-neutral-400 text-sm mb-1">Reward Points</h3>
+                                        <p className="text-white text-3xl font-bold">{orders.length}</p>
+                                    </div>
+
+                                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
+                                            from-sandbrown to-[#f4a261]">
+                                                <Star className="w-6 h-6 text-white" />
                                             </div>
+                                            <span className="text-green-400 text-sm font-medium">Gold</span>
+                                        </div>
+                                        <h3 className="text-neutral-400 text-sm mb-1">Member Since</h3>
+                                        <p className="text-white text-xl font-bold">{customer.createdAt}</p>
+                                    </div>
+                                </div>
+
+                                {/* Recent Orders */}
+                                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-white text-xl font-bold">Recent Orders</h2>
+                                        <button className="text-sandbrown text-sm font-medium hover:text-white transition-colors">
+                                            View All
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {orders.map((order) => (
+                                            <div key={order._id} className="flex items-center justify-between p-4 bg-neutral-700/30 
+                                            rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl 
+                                                    bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                                        <Image
+                                                            alt='Burger'
+                                                            src={'/Cheeseburger.png'}
+                                                            width={40}
+                                                            height={40}
+                                                        />
+
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-white font-medium">{order._id}</p>
+                                                        <p className="text-neutral-400 text-sm">
+                                                            {order.items.map((item, index) => (
+                                                                <div key={index} className="border-b py-2">
+                                                                    <p><strong>{item.name}</strong> x {item.quantity}</p>
+                                                                    <p>Meat: {item.meatType}</p>
+                                                                    <p>Side: {item.side}</p>
+                                                                    <p>Beverage: {item.beverage}</p>
+                                                                    {item.toppings.length > 0 && (
+                                                                        <p>
+                                                                            Toppings: {item.toppings.map(t => `${t.name} 
+                                                                                (${formatNaira(t.price)})`).join(', ')}
+                                                                        </p>
+                                                                    )}
+                                                                    <p>Item Total: {formatNaira(item.itemTotal)}</p>
+                                                                </div>
+                                                            ))}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-white font-bold">{order.total}</p>
+                                                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
+                                                        ${getStatusColor(order.status)}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Quick Actions */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
+                                    hover:border-neutral-600 transition-all cursor-pointer">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg mb-2">Order Again</h3>
+                                                <p className="text-neutral-400 text-sm">Reorder your favorites in seconds</p>
+                                            </div>
+                                            <ChevronRight className="w-6 h-6 text-neutral-400" />
+                                        </div>
+                                    </div>
+                                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
+                                    hover:border-neutral-600 transition-all cursor-pointer">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg mb-2">Track Order</h3>
+                                                <p className="text-neutral-400 text-sm">See where your burger is now</p>
+                                            </div>
+                                            <ChevronRight className="w-6 h-6 text-neutral-400" />
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
-                            {/* {activeTab === 'favorites' && (
+                        {/* {activeTab === 'favorites' && (
                             <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                                 <h2 className="text-white text-xl font-bold mb-6">Your Favorite Burgers</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -446,80 +450,80 @@ const UserClient = ({ userId }: { userId: string }) => {
                             </div>
                         )} */}
 
-                            {activeTab === 'orders' && (
-                                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                    <h2 className="text-white text-xl font-bold mb-6">All Orders</h2>
-                                    <div className="space-y-4">
-                                        {orders.map((order) => (
-                                            <div key={order._id} className="p-4 bg-neutral-700/30 rounded-lg border border-neutral-700">
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <h3 className="text-white font-bold">{order._id}</h3>
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium 
+                        {activeTab === 'orders' && (
+                            <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                                <h2 className="text-white text-xl font-bold mb-6">All Orders</h2>
+                                <div className="space-y-4">
+                                    {orders.map((order) => (
+                                        <div key={order._id} className="p-4 bg-neutral-700/30 rounded-lg border border-neutral-700">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h3 className="text-white font-bold">{order._id}</h3>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium 
                                                     ${getStatusColor(order.status)}`}>
-                                                        {order.status}
-                                                    </span>
-                                                </div>
-                                                <p className="text-neutral-400 text-sm mb-2"> {order.items.map((item, index) => (
-                                                    <div key={index} className="border-b py-2">
-                                                        <p><strong>{item.name}</strong> x {item.quantity}</p>
-                                                        <p>Meat: {item.meatType}</p>
-                                                        <p>Side: {item.side}</p>
-                                                        <p>Beverage: {item.beverage}</p>
-                                                        {item.toppings.length > 0 && (
-                                                            <p>
-                                                                Toppings: {item.toppings.map(t => `${t.name} 
-                                                                                (${formatNaira(t.price)})`).join(', ')}
-                                                            </p>
-                                                        )}
-                                                        <p>Item Total: {formatNaira(item.itemTotal)}</p>
-                                                    </div>
-                                                ))}</p>
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-
-                                                    </span>
-                                                    <span className="text-white font-bold">{order.total}</span>
-                                                </div>
+                                                    {order.status}
+                                                </span>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                                            <p className="text-neutral-400 text-sm mb-2"> {order.items.map((item, index) => (
+                                                <div key={index} className="border-b py-2">
+                                                    <p><strong>{item.name}</strong> x {item.quantity}</p>
+                                                    <p>Meat: {item.meatType}</p>
+                                                    <p>Side: {item.side}</p>
+                                                    <p>Beverage: {item.beverage}</p>
+                                                    {item.toppings.length > 0 && (
+                                                        <p>
+                                                            Toppings: {item.toppings.map(t => `${t.name} 
+                                                                                (${formatNaira(t.price)})`).join(', ')}
+                                                        </p>
+                                                    )}
+                                                    <p>Item Total: {formatNaira(item.itemTotal)}</p>
+                                                </div>
+                                            ))}</p>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
 
-                            {activeTab === 'settings' && (
-                                <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                                    <h2 className="text-white text-xl font-bold mb-6">Account Settings</h2>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-neutral-400 text-sm mb-2">Full Name</label>
-                                            <input
-                                                type="text"
-                                                defaultValue={customer.fullname}
-                                                className="w-full px-4 py-3 bg-neutral-700/50 border border-neutral-700 
-                                            rounded-lg text-white focus:outline-none focus:border-sandbrown transition-colors"
-                                            />
+                                                </span>
+                                                <span className="text-white font-bold">{order.total}</span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-neutral-400 text-sm mb-2">Email</label>
-                                            <input
-                                                type="email"
-                                                defaultValue={customer.email}
-                                                className="w-full px-4 py-3 bg-neutral-700/50 border border-neutral-700 
-                                            rounded-lg text-white focus:outline-none focus:border-sandbrown transition-colors"
-                                            />
-                                        </div>
-                                        <button className="w-full py-3 rounded-lg font-medium text-white bg-gradient-to-r 
-                                    from-sandbrown to-[#f4a261] hover:scale-105 transition-all">
-                                            Save Changes
-                                        </button>
-                                    </div>
+                                    ))}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'settings' && (
+                            <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                                <h2 className="text-white text-xl font-bold mb-6">Account Settings</h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-neutral-400 text-sm mb-2">Full Name</label>
+                                        <input
+                                            type="text"
+                                            defaultValue={customer.fullname}
+                                            className="w-full px-4 py-3 bg-neutral-700/50 border border-neutral-700 
+                                            rounded-lg text-white focus:outline-none focus:border-sandbrown transition-colors"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-neutral-400 text-sm mb-2">Email</label>
+                                        <input
+                                            type="email"
+                                            defaultValue={customer.email}
+                                            className="w-full px-4 py-3 bg-neutral-700/50 border border-neutral-700 
+                                            rounded-lg text-white focus:outline-none focus:border-sandbrown transition-colors"
+                                        />
+                                    </div>
+                                    <button className="w-full py-3 rounded-lg font-medium text-white bg-gradient-to-r 
+                                    from-sandbrown to-[#f4a261] hover:scale-105 transition-all">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div >
-        );
+            </div>
+        </div >
+    );
 }
 
 export default UserClient

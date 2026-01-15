@@ -1,11 +1,10 @@
 
 import { ToastContainer as ReactToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css'
-import ToastServer from './ToastServer';
 
 const ToastContainer = () => {
-   
-{/* <ToastServer/> */}
+
+    {/* <ToastServer/> */ }
     return (
         <ReactToastContainer
             position="top-right"
@@ -17,7 +16,6 @@ const ToastContainer = () => {
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme={'dark' === 'dark' ? 'dark' : 'light'}
         />
     );
 };

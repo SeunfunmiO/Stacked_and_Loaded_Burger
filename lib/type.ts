@@ -320,3 +320,22 @@ export type GetOrdersResponse = {
 
 
 
+export interface ICustomerOrder {
+  paymentReference: string,
+  paymentStatus: string,
+  customer: {
+    name: string,
+    email: string,
+    phone: string
+  },
+  delivery: string,
+  note: string,
+  items: OrderItemPayload[],
+  subtotal: number,
+  deliveryFee: number,
+  total: number,
+  paymentMethod: string,
+  createdAt: string,
+  estimatedDelivery: string,
+  rider: string
+} 

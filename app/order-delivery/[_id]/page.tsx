@@ -7,8 +7,18 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import React from 'react'
 
-export const generateMetadata = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
-    const { _id } = await params
+type PageProps = {
+    params: {
+        _id: string
+    }
+}
+
+export const generateMetadata = async ({
+    params,
+}: {
+    params: { _id: string }
+}): Promise<Metadata> => {
+    const { _id } =  params
     const product = await ProductModel.findById(_id)
 
     return {
@@ -22,9 +32,8 @@ export const generateMetadata = async ({ params }: { params: Promise<{ _id: stri
     }
 }
 
-
-const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
-    const { _id } = await params
+const Page = async ({ params }: PageProps) => {
+    const { _id } = params 
     const product = await ProductModel.findById(_id)
 
 

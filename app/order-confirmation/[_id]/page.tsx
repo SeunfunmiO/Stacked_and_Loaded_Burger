@@ -7,23 +7,36 @@ import React from 'react'
 import { CheckCircle, Package, MapPin, Clock, Phone, Mail, User, CreditCard, Bike, Calendar, Download, Printer, Share2, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { formatNaira } from '@/app/components/NairaIcon'
+import {  ICustomerOrder } from '@/lib/type'
 
-export const generateMetadata = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
-    const { _id } = await params
+
+type PageProps = {
+    params: {
+        _id: string
+    }
+}
+
+export const generateMetadata = async ({
+    params,
+}: {
+    params: { _id: string }
+}): Promise<Metadata> => {
+    const { _id } = params
+
     const order = await OrderModel.findById(_id)
-    
 
     return {
-        title: `Order Confirmation - Stacked & Loaded Burger | Order #${order.paymentReference}`,
+        title: `Order Confirmation - Stacked & Loaded Burger | Order #${order?.paymentReference}`,
         description: `Your order has been confirmed. Track your order status here.`,
     }
 }
 
-const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
-    const { _id } = await params
-    const order = await OrderModel.findById(_id)
 
-    // Mock order data structure - adjust based on your actual model
+const Page = async ({ params }: PageProps) => {
+    const { _id } = params // ✅ NO await
+    const order: ICustomerOrder | null = await OrderModel.findById(_id)
+
+
     const orderData = {
         orderNumber: order?.paymentReference || 'ORD-2026-001',
         status: order?.paymentStatus || 'confirmed',
@@ -31,10 +44,8 @@ const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
         customerEmail: order?.customer.email || ' - ',
         customerPhone: order?.customer.phone || ' - ',
         deliveryAddress: order?.delivery || ' - ',
-        note:order.note || ' - ',
-        items: order?.items || [
-          ''
-        ],
+        note: order?.note || ' - ',
+        items: order?.items || [],
         subtotal: order?.subtotal || 30.97,
         deliveryFee: order?.deliveryFee || 3.99,
         total: order?.total || 38.46,
@@ -118,7 +129,7 @@ const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
                                 </div>
                                 <div className="ml-4 flex-1">
                                     <h3 className="font-semibold text-gray-600 dark:text-gray-400">Preparing</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-500">We'll start preparing soon</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-500">We&apos;ll start preparing soon</p>
                                 </div>
                             </div>
 
