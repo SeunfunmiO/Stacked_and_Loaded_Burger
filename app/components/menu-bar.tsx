@@ -35,7 +35,7 @@ const Menubar = () => {
                 <nav className="flex flex-col gap-4 text-lg font-medium">
                     <Link href="/">HOME</Link>
                     <Link href="/menu">OUR MENUS</Link>
-                    <Link href="/order-now">ORDER ONLINE</Link>
+                    <Link href="/order-delivery">ORDER ONLINE</Link>
                     <Link href="/location">FIND US</Link>
                     <Link href="/about">ABOUT US</Link>
                     <Link href="/contact">CONTACT</Link>
