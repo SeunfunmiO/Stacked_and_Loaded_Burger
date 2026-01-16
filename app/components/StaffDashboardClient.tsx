@@ -38,6 +38,7 @@ const StaffDashboardClient = () => {
         ordersTrend: ''
     });
     const router = useRouter();
+    const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
     // Fetch orders and compute stats
     useEffect(() => {
@@ -144,27 +145,58 @@ const StaffDashboardClient = () => {
         }
     };
 
-    const handleStatusChange = async (orderId: string, newStatus: IOrder['status']) => {
-        try {
-            await updateOrderStatus(orderId, newStatus); // pass newStatus if needed
-            setOrders((prev) =>
-                prev.map((order) =>
-                    order._id === orderId ? { ...order, status: newStatus } : order
-                )
-            );
+    const handleStatusChange = async (
+  orderId: string,
+  newStatus: IOrder['status']
+) => {
+  try {
+    const res = await updateOrderStatus(orderId, newStatus);
 
-            setActiveOrders((prev) =>
-                prev.map((order) =>
-                    order._id === orderId ? { ...order, status: newStatus } : order
-                )
-            );
+    if (!res?.success) {
+      toast.error(res?.message || 'Failed to update order');
+      return;
+    }
 
-            toast.success('Order status updated!');
-        } catch (error) {
-            console.error(error);
-            toast.error('Failed to update order');
-        }
-    };
+    setActiveOrders((prev) =>
+      prev.map((order) =>
+        order._id === orderId
+          ? { ...order, status: newStatus }
+          : order
+      )
+    );
+
+    toast.success('Order status updated!');
+  } catch (error) {
+    console.error(error);
+    toast.error('Something went wrong');
+  }
+};
+
+
+    
+
+   
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 300); // 300ms delay
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+
+    const filteredOrders = activeOrders.filter((order) => {
+        const query = debouncedQuery.toLowerCase();
+
+        // Search by order ID, user name/email, or any other field
+        return (
+            order._id.toLowerCase().includes(query) ||
+            order.user.toLowerCase().includes(query) ||
+            order.items.some((item) => item.name.toLowerCase().includes(query))
+        );
+    });
+
 
     return (
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -199,7 +231,7 @@ const StaffDashboardClient = () => {
                         </div>
                         <span className="text-green-400 text-sm font-medium">{statsState.revenueTrend}</span>
                     </div>
-                    <h3 className="text-neutral-400 text-sm mb-1">Today's Revenue</h3>
+                    <h3 className="text-neutral-400 text-sm mb-1">Today&apos;s Revenue</h3>
                     <p className="text-white text-3xl font-bold">{formatNaira(statsState.revenue)}</p>
                 </div>
 
@@ -239,7 +271,7 @@ const StaffDashboardClient = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {activeOrders.map((order) => (
+                            {filteredOrders.map((order) => (
                                 <div
                                     key={order._id}
                                     className={`p-4 bg-neutral-700/30 rounded-xl border hover:border-neutral-600 transition-all`}
@@ -251,7 +283,7 @@ const StaffDashboardClient = () => {
                                                 <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleString()}</span>
                                             </div>
                                             <p className="text-neutral-300 font-medium mb-1">{order.user}</p>
-                                            <p className="text-neutral-400 text-sm">
+                                            <div className="text-neutral-400 text-sm">
                                                 {order.items.map((item, index) => (
                                                     <div key={index} className="border-b py-2">
                                                         <p><strong>{item.name}</strong> x {item.quantity}</p>
@@ -265,7 +297,7 @@ const StaffDashboardClient = () => {
                                                         )}
                                                     </div>
                                                 ))}
-                                            </p>
+                                            </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-white font-bold text-lg mb-2">{formatNaira(order.total)}</p>

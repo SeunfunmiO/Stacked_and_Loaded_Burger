@@ -25,43 +25,7 @@ import { ModeToggle } from "./theme-icon"
 import Menubar from "./menu-bar"
 import { useRouter } from "next/navigation"
 
-const components: { title: string; href: string; description: string }[] = [
-    {
-        title: "Alert Dialog",
-        href: "/menu",
-        description:
-            "A modal dialog that interrupts the user with important content and expects a response.",
-    },
-    {
-        title: "Hover Card",
-        href: "/docs/primitives/hover-card",
-        description:
-            "For sighted users to preview content available behind a link.",
-    },
-    {
-        title: "Progress",
-        href: "/docs/primitives/progress",
-        description:
-            "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-    },
-    {
-        title: "Scroll-area",
-        href: "/docs/primitives/scroll-area",
-        description: "Visually or semantically separates content.",
-    },
-    {
-        title: "Tabs",
-        href: "/docs/primitives/tabs",
-        description:
-            "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-    },
-    {
-        title: "Tooltip",
-        href: "/docs/primitives/tooltip",
-        description:
-            "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-    },
-]
+
 
 export function NavigationMenuDemo() {
     const isMobile = useIsMobile()
@@ -97,70 +61,30 @@ export function NavigationMenuDemo() {
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem className='hidden lg:block'>
-                        <NavigationMenuTrigger>OUR MENUS</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                {components.map((component) => (
-                                    <ListItem
-                                        key={component.title}
-                                        title={component.title}
-                                        href={component.href}
-                                    >
-                                        {component.description}
-                                    </ListItem>
-                                ))}
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem className="hidden lg:block">
-                        <NavigationMenuTrigger>ORDER ONLINE</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid w-[200px] gap-4">
-                                <li>
-                                    <NavigationMenuLink asChild>
-                                        <Link href="order-delivery">Components</Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink asChild>
-                                        <Link href="#">Documentation</Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink asChild>
-                                        <Link href="#">Blocks</Link>
-                                    </NavigationMenuLink>
-                                </li>
-                            </ul>
-                        </NavigationMenuContent>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/menu">OUR MENU</Link>
+                        </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem className='hidden lg:block'>
                         <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                            <Link href="/docs">ABOUT</Link>
+                            <Link href="/order-delivery">ORDER ONLINE</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className='hidden lg:block'>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/about">ABOUT</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem className="hidden lg:block">
                         <NavigationMenuTrigger>FIND US</NavigationMenuTrigger>
                         <NavigationMenuContent>
-                            <ul className="grid w-[300px] gap-4">
+                            <ul className="grid w-75 gap-4">
                                 <li>
                                     <NavigationMenuLink asChild>
                                         <Link href="#">
-                                            <div className="font-medium">Components</div>
+                                            <div className="font-medium">Location</div>
                                             <div className="text-muted-foreground">
-                                                Browse all components in the library.
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink asChild>
-                                        <Link href="#">
-                                            <div className="font-medium">Documentation</div>
-                                            <div className="text-muted-foreground">
-                                                Learn how to use the library.
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink asChild>
-                                        <Link href="#">
-                                            <div className="font-medium">Blog</div>
-                                            <div className="text-muted-foreground">
-                                                Read our latest blog posts.
+                                                We are located at 123 Ogooluwa st., Osogbo, Osun State, Nigeria.
                                             </div>
                                         </Link>
                                     </NavigationMenuLink>
@@ -172,7 +96,7 @@ export function NavigationMenuDemo() {
                     <NavigationMenuItem className="hidden lg:block">
                         <NavigationMenuTrigger>SIGN IN</NavigationMenuTrigger>
                         <NavigationMenuContent>
-                            <ul className="grid w-[200px] gap-4">
+                            <ul className="grid w-50 gap-4">
                                 <li>
                                     <NavigationMenuLink asChild>
                                         <Link href="sign-in" className="flex-row items-center gap-2">

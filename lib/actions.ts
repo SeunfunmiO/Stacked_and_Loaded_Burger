@@ -162,7 +162,7 @@ export const getCustomer = async () => {
 
 export const updateUser = async (data: {
     email: string,
-   fullname:string
+    fullname: string
 }) => {
     await dbConnect();
 
@@ -212,7 +212,7 @@ export const updateUser = async (data: {
 };
 
 
-    
+
 
 export const logOut = async () => {
     try {
@@ -544,44 +544,34 @@ export const verifyPayment = async (orderId: string, reference: string) => {
     }
 }
 
-export const updateOrderStatus = async ({
-    orderId,
-    status,
-    userId,
-    isAdmin,
-}: updateOrderStatusInput) => {
+export const updateOrderStatus = async (orderId: string,
+    status: 'pending' | 'confirmed' | 'preparing' | 'out-for-delivery' | 'delivered' | 'cancelled'
+) => {
     try {
-        const order = await OrderModel.findById(orderId)
+        await dbConnect();
 
-        if (!order) {
-            return {
-                success: false,
-                message: 'Order not found'
-            }
+        const updatedOrder = await OrderModel.findByIdAndUpdate(
+            orderId,
+            { status },
+            { new: true }
+        );
+
+        if (!updatedOrder) {
+            return { success: false, message: 'Order not found' };
         }
 
-        if (!isAdmin && order.user.toString() !== userId) {
-            return {
-                success: false,
-                message: 'Unauthorized'
-            }
-        }
-
-        order.status = status
-        await order.save()
+        revalidatePath('/staff/staff-dashboard');
+        revalidatePath('/user/user-dashboard');
+        revalidatePath('/user/track-orders');
 
         return {
             success: true,
-            message: 'Order status updated successfully',
-
-        }
-
+            message: 'Order status updated',
+            data: updatedOrder,
+        };
     } catch (error) {
-        console.error("Error updating order-status : ", error);
-        return {
-            success: false,
-            message: "Error updating order-status"
-        }
+        console.error(error);
+        return { success: false, message: 'Failed to update order' };
     }
 }
 
@@ -631,7 +621,7 @@ export const getSingleOrder = async ({ userId }: { userId: string }):
 
         const orders = await OrderModel.find({
             user: userId
-        }).sort({ createdAt: -1 })  
+        }).sort({ createdAt: -1 })
             .lean()
 
         const plainOrders = orders.map(order => ({
