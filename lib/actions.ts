@@ -309,8 +309,8 @@ export const addProduct = async (
 }
 
 export const getAllProducts = async () => {
-    await dbConnect()
     try {
+        await dbConnect()
         const products = await ProductModel.find()
         if (!products) {
             return {
@@ -336,8 +336,8 @@ export const getAllProducts = async () => {
 }
 
 export const getProduct = async ({ _id }: { _id: string }) => {
-    await dbConnect()
     try {
+        await dbConnect()
         const product = await ProductModel.findById(_id)
         if (!product) {
             return {
