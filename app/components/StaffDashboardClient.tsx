@@ -173,9 +173,6 @@ const StaffDashboardClient = () => {
 };
 
 
-    
-
-   
 
     useEffect(() => {
         const timer = setTimeout(() => {

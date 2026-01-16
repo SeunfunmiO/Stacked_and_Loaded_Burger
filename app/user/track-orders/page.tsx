@@ -1,8 +1,11 @@
+import TrackOrderPage from '@/app/components/UserTrackOrder'
 import React from 'react'
 
-const page = () => {
+const page = ({ userId }: { userId: string }) => {
   return (
-    <div>page</div>
+    <div>
+        <TrackOrderPage userId={userId}/>
+    </div>
   )
 }
 
