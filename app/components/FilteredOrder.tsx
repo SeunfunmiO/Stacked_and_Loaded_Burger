@@ -27,7 +27,7 @@ const FilteredOrder = () => {
                 if (!res.success) {
                     toast.error(res.message)
                 } else {
-                    toast.success(res.message)
+                    
                     setProducts(data)
                     setProductCat(data.categories)
                 }

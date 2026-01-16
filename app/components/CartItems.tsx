@@ -22,8 +22,9 @@ const CartItems = () => {
         fetchCart()
     }, [])
 
+    const deliveryFee = 1000
     const grandTotal = cart.reduce(
-        (sum, item) => sum + item.subtotal,
+        (sum, item) => sum + item.subtotal + deliveryFee,
         0
     )
 
@@ -199,8 +200,8 @@ const CartItems = () => {
                                     </div>
                                     <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                         <span>Delivery Fee</span>
-                                        <span className="font-semibold text-green-600 dark:text-green-400">
-                                            Free
+                                        <span className="font-semibold text-sandbrown dark:sandbrown">
+                                            {formatNaira(deliveryFee)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-gray-600 dark:text-gray-400">

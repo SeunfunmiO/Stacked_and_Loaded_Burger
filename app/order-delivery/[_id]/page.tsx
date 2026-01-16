@@ -13,12 +13,8 @@ type PageProps = {
     }
 }
 
-export const generateMetadata = async ({
-    params,
-}: {
-    params: { _id: string }
-}): Promise<Metadata> => {
-    const { _id } =  params
+export const generateMetadata = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
+    const { _id } = await params
     const product = await ProductModel.findById(_id)
 
     return {
@@ -32,9 +28,11 @@ export const generateMetadata = async ({
     }
 }
 
-const Page = async ({ params }: PageProps) => {
-    const { _id } = params 
+const Page = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
+    const { _id } = await params 
     const product = await ProductModel.findById(_id)
+
+    console.log(product);
 
 
     return (
@@ -47,7 +45,7 @@ const Page = async ({ params }: PageProps) => {
                 className='flex items-center md:items-start flex-col md:flex-row justify-evenly bg-white'
             >
                 <Image
-                    alt={product.name}
+                    alt={product?.name}
                     src={product.picture}
                     width={400}
                     height={400}
@@ -56,21 +54,21 @@ const Page = async ({ params }: PageProps) => {
                 <div className="flex flex-col gap-8 my-5  md:mx-0">
                     <div className='flex flex-col gap-2'>
                         <h1 className="text-3xl lg:text-4xl font-bold capitalize text-black">
-                            {product.name}
+                            {product?.name}
                         </h1>
                         <p className="font-bold text-sandbrown text-lg">
-                            {formatNaira(product.price)}
+                            {formatNaira(product?.price)}
                         </p>
                     </div>
 
-                    <h3 className='text-black'>{product.description}</h3>
+                    <h3 className='text-black'>{product?.description}</h3>
 
                     <AllOrder _id={_id} />
 
                     <p
                         className="text-black font-medium"
                     >
-                        Category : <span className="font-semibold">{product.categories}</span>
+                        Category : <span className="font-semibold">{product?.categories}</span>
                     </p>
                 </div>
             </div>
