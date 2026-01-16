@@ -28,12 +28,9 @@ export const generateMetadata = async ({ params }: { params: Promise<{ _id: stri
     }
 }
 
-const Page = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
+const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
     const { _id } = await params 
     const product = await ProductModel.findById(_id)
-
-    console.log(product);
-
 
     return (
         <div

@@ -16,12 +16,8 @@ type PageProps = {
     }
 }
 
-export const generateMetadata = async ({
-    params,
-}: {
-    params: { _id: string }
-}): Promise<Metadata> => {
-    const { _id } = params
+export const generateMetadata = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata>  => {
+    const { _id } = await params
 
     const order = await OrderModel.findById(_id)
 
@@ -32,8 +28,8 @@ export const generateMetadata = async ({
 }
 
 
-const Page = async ({ params }: PageProps) => {
-    const { _id } = params // ✅ NO await
+const Page = async ({ params }: { params: Promise<{ _id: string }> })  => {
+    const { _id } = await params // ✅ NO await
     const order: ICustomerOrder | null = await OrderModel.findById(_id)
 
 
