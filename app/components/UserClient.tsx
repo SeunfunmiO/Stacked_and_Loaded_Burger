@@ -65,7 +65,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                 }
 
             } catch (error) {
-                console.log("Error fetching customer ", error);
+                console.error("Error fetching customer ", error);
             }
         }
         fetchCustomer()
@@ -87,15 +87,14 @@ const UserClient = ({ userId }: { userId: string }) => {
     useEffect(() => {
         const fetchOrder = async () => {
             const res = await getSingleOrder({ userId })
-            console.log(res);
-
 
             if (!res.success) {
                 return toast.error(res.message)
             }
 
             setOrders(res.orders)
-            setRecentOrder(res.orders.slice(0, 3))
+            
+            setRecentOrder(res.orders.slice(0, 1))
         }
         fetchOrder()
     }, [userId])
@@ -120,22 +119,25 @@ const UserClient = ({ userId }: { userId: string }) => {
 
     const getStatusColor = (status: IOrder['status']): string => {
         switch (status) {
-            case 'pending':
-                return 'bg-yellow-500/20 text-green-400';
-            case 'out-for-delivery':
-                return 'bg-sandbrown-500/20 text-sandbrown-400';
             case 'confirmed':
-                return 'bg-green-500/20 text-green-400';
+                return 'bg-blue-500/20 border-blue-500/30 text-blue-400 hover:bg-blue-500/30'
+            case 'out-for-delivery':
+                return 'bg-orange-500/20 border-orange-500/30 text-orange-400 hover:bg-orange-500/30'
             case 'delivered':
-                return 'bg-green-500/20 text-green-400';
-            case 'preparing':
-                return 'bg-yellow-500/20 text-yellow-400';
+                return 'bg-green-500/20 border-green-500/30 text-green-400 hover:bg-green-500/30'
             case 'cancelled':
-                return 'bg-red-500/20 text-red-400';
+                return 'bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30'
             default:
-                return 'bg-neutral-500/20 text-neutral-400';
+                return 'bg-gray-500/20 border-gray-500/30 text-gray-400 hover:bg-gray-500/30'
         }
     };
+
+    // const orderAgain = (orders) => {
+    //     if (!orders || orders.length === 0) return;
+
+    //     const lastOrder = orders[orders.length - 1]; 
+    //     setCartItems(lastOrder.items);
+    // };
 
 
 
@@ -145,11 +147,11 @@ const UserClient = ({ userId }: { userId: string }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r 
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-linear-to-r 
                             from-sandbrown to-[#f4a261]">
                                 <span className="text-2xl">
                                     <Image
-                                    onClick={()=>router.push('/')}
+                                        onClick={() => router.push('/')}
                                         alt='Burger'
                                         src={'/Cheeseburger.png'}
                                         width={40}
@@ -166,7 +168,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                             </button>
                             <div className="flex items-center space-x-3 cursor-pointer">
                                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-white 
-                                bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                bg-linear-to-r from-sandbrown to-[#f4a261]">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <span className="text-white font-medium hidden sm:block">{customer.fullname}</span>
@@ -183,13 +185,13 @@ const UserClient = ({ userId }: { userId: string }) => {
                         <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                             <div className="text-center mb-6">
                                 <div className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center 
-                                text-white text-3xl bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                text-white text-3xl bg-linear-to-r from-sandbrown to-[#f4a261]">
                                     <User className="w-12 h-12" />
                                 </div>
                                 <h2 className="text-white font-bold text-xl mb-1">{customer.fullname}</h2>
                                 <p className="text-neutral-400 text-sm mb-2">{customer.email}</p>
                                 <span className="inline-block px-4 py-1 rounded-full text-sm font-medium text-white
-                                 bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                 bg-linear-to-r from-sandbrown to-[#f4a261]">
                                     {orders.length < 6 ? 'Bronze Member' : "Gold Member"}
                                 </span>
                             </div>
@@ -272,7 +274,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r 
                                             from-sandbrown to-[#f4a261]">
                                                 <ShoppingBag className="w-6 h-6 text-white" />
                                             </div>
@@ -284,19 +286,19 @@ const UserClient = ({ userId }: { userId: string }) => {
 
                                     <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r 
                                             from-sandbrown to-[#f4a261]">
                                                 <Award className="w-6 h-6 text-white" />
                                             </div>
                                             <span className="text-green-400 text-sm font-medium">+10</span>
                                         </div>
                                         <h3 className="text-neutral-400 text-sm mb-1">Reward Points</h3>
-                                        <p className="text-white text-3xl font-bold">{orders.length}</p>
+                                        <p className="text-white text-3xl font-bold">{orders.length * 10}</p>
                                     </div>
 
                                     <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r 
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r 
                                             from-sandbrown to-[#f4a261]">
                                                 <Star className="w-6 h-6 text-white" />
                                             </div>
@@ -317,42 +319,42 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             View All
                                         </button>
                                     </div>
+
+                                    {
+                                        orders.length === 0 && (
+
+                                            <div className='flex flex-col gap-4 justify-center items-center'>
+                                                <p className="text-neutral-400 text-center">No recent orders found.</p>
+                                                <Button
+                                                    onClick={() => router.push('/order-delivery')}
+                                                    className='bg-sandbrown rounded text-white'
+                                                >
+                                                    Order Now
+                                                </Button>
+                                            </div>
+                                        )
+                                    }
                                     <div className="space-y-4">
                                         {recentOrder.map((order) => (
-                                            <div key={order._id} className="flex items-center justify-between p-4 bg-neutral-700/30 
-                                            rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
+                                            <div key={order._id} className="flex md:flex-row flex-col md:items-center justify-between p-4
+                                             bg-neutral-700/30 rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
                                                 <div className="flex items-center space-x-4">
-
-                                                    {
-                                                        orders.length === 0 && (
-
-                                                            <div className='flex flex-col gap-4 justify-center items-center'>
-                                                                <p className="text-neutral-400 text-center">No recent orders found.</p>
-                                                                <Button
-                                                                    onClick={() => router.push('/order-delivery')}
-                                                                    className='bg-sandbrown rounded'
-                                                                >
-                                                                    Order Now
-                                                                </Button>
-                                                            </div>
-                                                        )
-                                                    }
-                                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl 
-                                                    bg-gradient-to-r from-sandbrown to-[#f4a261]"
-                                                    >
-                                                        <Image
-                                                            alt='Burger'
-                                                            src={'/Cheeseburger.png'}
-                                                            width={40}
-                                                            height={40}
-                                                        />
-
-                                                    </div>
                                                     <div>
-                                                        <p className="text-white font-medium">{order._id}</p>
+                                                        <p className="text-sandbrown font-medium">ORDERID : {order.paymentReference}</p>
                                                         <div className="text-neutral-400 text-sm">
                                                             {order.items.map((item, index) => (
                                                                 <div key={index} className="border-b py-2">
+                                                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl 
+                                                                     bg-linear-to-r from-sandbrown to-[#f4a261]"
+                                                                    >
+                                                                        <Image
+                                                                            alt={item.name}
+                                                                            src={'/cheeseBurger.png'}
+                                                                            width={40}
+                                                                            height={40}
+                                                                        />
+                                                                    </div>
+
                                                                     <p><strong>{item.name}</strong> x {item.quantity}</p>
                                                                     <p>Meat: {item.meatType}</p>
                                                                     <p>Side: {item.side}</p>
@@ -369,8 +371,11 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-white font-bold">{formatNaira(order.total)}</p>
+                                                <div >
+                                                    <div className="flex items-center justify-between">
+                                                        <h1 className="font-bold">Total</h1>
+                                                        <p className="text-white font-bold">{formatNaira(order.total)}</p>
+                                                    </div>
                                                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
                                                         ${getStatusColor(order.status)}`}>
                                                         {order.status}
@@ -395,8 +400,11 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             <ChevronRight className="w-6 h-6 text-neutral-400" />
                                         </div>
                                     </div>
-                                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
-                                    hover:border-neutral-600 transition-all cursor-pointer">
+                                    <div 
+                                    onClick={()=>router.push('/user/track-orders')}
+                                    className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
+                                    hover:border-neutral-600 transition-all cursor-pointer"
+                                    >
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <h3 className="text-white font-bold text-lg mb-2">Track Order</h3>
@@ -426,7 +434,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                 </div>
                                             </div>
                                             <button className="w-full py-2 rounded-lg font-medium text-white transition-all 
-                                            hover:scale-105 bg-gradient-to-r from-sandbrown to-[#f4a261]">
+                                            hover:scale-105 bg-linear-to-r from-sandbrown to-[#f4a261]">
                                                 Order Now
                                             </button>
                                         </div>
@@ -437,13 +445,13 @@ const UserClient = ({ userId }: { userId: string }) => {
 
                         {activeTab === 'rewards' && (
                             <div className="space-y-6">
-                                <div className="bg-gradient-to-r from-neutral-800 to-neutral-700 rounded-2xl border border-neutral-700
+                                <div className="bg-linear-to-r from-neutral-800 to-neutral-700 rounded-2xl border border-neutral-700
                                  p-8 text-center">
                                     <Award className="w-16 h-16 mx-auto mb-4 text-sandbrown" />
                                     <h2 className="text-white text-3xl font-bold mb-2">{customer.points || "1250"} Points</h2>
                                     <p className="text-neutral-400 mb-6">You're 250 points away from your next reward!</p>
                                     <div className="max-w-md mx-auto bg-neutral-700 rounded-full h-4 overflow-hidden">
-                                        <div className="h-full rounded-full bg-gradient-to-r from-sandbrown to-[#f4a261]"
+                                        <div className="h-full rounded-full bg-linear-to-r from-sandbrown to-[#f4a261]"
                                             style={{ width: '83%' }}></div>
                                     </div>
                                 </div>
@@ -464,7 +472,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                     disabled={customer.points < reward.pointsRequired}
                                                     className={`px-6 py-2 rounded-lg font-medium text-white
                                                          ${customer.points >= reward.pointsRequired
-                                                            ? 'bg-gradient-to-r from-sandbrown to-[#f4a261] hover:scale-105'
+                                                            ? 'bg-linear-to-r from-sandbrown to-[#f4a261] hover:scale-105'
                                                             : 'bg-neutral-600 cursor-not-allowed opacity-50'
                                                         } transition-all`}
                                                 >
@@ -480,6 +488,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                         {activeTab === 'orders' && (
                             <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                                 <h2 className="text-white text-xl font-bold mb-6">All Orders</h2>
+
                                 <div className="space-y-4">
                                     {orders.map((order) => (
                                         <div key={order._id} className="p-4 bg-neutral-700/30 rounded-lg border border-neutral-700">
@@ -490,7 +499,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                     {order.status}
                                                 </span>
                                             </div>
-                                            <p className="text-neutral-400 text-sm mb-2"> {order.items.map((item, index) => (
+                                            <div className="text-neutral-400 text-sm mb-2"> {order.items.map((item, index) => (
                                                 <div key={index} className="border-b py-2">
                                                     <p><strong>{item.name}</strong> x {item.quantity}</p>
                                                     <p>Meat: {item.meatType}</p>
@@ -504,7 +513,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                     )}
                                                     <p>Item Total: {formatNaira(item.itemTotal)}</p>
                                                 </div>
-                                            ))}</p>
+                                            ))}</div>
                                             <div className="flex items-center justify-between">
                                                 <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
 
@@ -513,6 +522,21 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             </div>
                                         </div>
                                     ))}
+
+                                    {
+                                        orders.length === 0 && (
+
+                                            <div className='flex flex-col gap-4 justify-center items-center'>
+                                                <p className="text-neutral-400 text-center">No orders found.</p>
+                                                <Button
+                                                    onClick={() => router.push('/order-delivery')}
+                                                    className='bg-sandbrown rounded text-white'
+                                                >
+                                                    Order Now
+                                                </Button>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                             </div>
                         )}
@@ -541,7 +565,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     </div>
                                     <button
                                         onClick={() => updateCustomerDetails({ email: customer.email, fullname: customer.fullname })}
-                                        className="w-full py-3 rounded-lg font-medium text-white bg-gradient-to-r 
+                                        className="w-full py-3 rounded-lg font-medium text-white bg-linear-to-r 
                                     from-sandbrown to-[#f4a261] hover:scale-105 transition-all">
                                         Save Changes
                                     </button>

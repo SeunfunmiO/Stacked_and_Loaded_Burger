@@ -23,10 +23,13 @@ const CartItems = () => {
     }, [])
 
     const deliveryFee = 1000
-    const grandTotal = cart.reduce(
-        (sum, item) => sum + item.subtotal + deliveryFee,
-        0
+    
+    const grandSubtotal = cart.reduce(
+        (sum, item) => sum + item.subtotal, 0
     )
+
+    const grandTotal = grandSubtotal + deliveryFee
+        
 
     const handleRemoveFromCart = () => {
         localStorage.removeItem('cart')
@@ -39,7 +42,7 @@ const CartItems = () => {
                 {/* Page Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                        <ShoppingCart className="w-8 h-8 mr-3 text-[#dc9457]" />
+                        <ShoppingCart className="w-8 h-8 mr-3 text-sandbrown" />
                         Shopping Cart
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -58,11 +61,11 @@ const CartItems = () => {
                                 Your cart is empty
                             </h2>
                             <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                Looks like you haven't added any delicious burgers yet!
+                                Looks like you haven&apos;t added any delicious burgers yet!
                             </p>
                             <Button
                                 onClick={() => router.push('/order-delivery')}
-                                className="bg-gradient-to-r from-[#dc9457] to-[#f4a261] hover:opacity-90 text-white rounded-lg px-8 py-6 font-semibold text-lg transition-all"
+                                className="bg-linear-to-r from-sandbrown to-[#f4a261] hover:opacity-90 text-white rounded-lg px-8 py-6 font-semibold text-lg transition-all"
                             >
                                 Start Shopping
                             </Button>
@@ -82,7 +85,7 @@ const CartItems = () => {
                                 >
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         {/* Product Image */}
-                                        <div className="flex-shrink-0">
+                                        <div className="shrink-0">
                                             <div className="w-full sm:w-32 h-32 bg-gray-100 dark:bg-neutral-800 rounded-xl overflow-hidden relative">
                                                 <Image
                                                     alt={item.name}
@@ -129,7 +132,7 @@ const CartItems = () => {
                                                 {/* Remove Button */}
                                                 <button
                                                     onClick={handleRemoveFromCart}
-                                                    className="flex-shrink-0 p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                    className="shrink-0 p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                                     title="Remove from cart"
                                                 >
                                                     <Trash2 className="w-5 h-5" />
@@ -146,8 +149,8 @@ const CartItems = () => {
                                                         Qty: <span className="font-semibold text-gray-900 dark:text-white">{item.quantity}</span>
                                                     </div>
                                                 </div>
-                                                <div className="text-xl font-bold text-[#dc9457]">
-                                                    {formatNaira(item.subtotal)}
+                                                <div className="text-xl font-bold text-sandbrown">
+                                                    {formatNaira(item.price)}
                                                 </div>
                                             </div>
                                         </div>
@@ -158,16 +161,16 @@ const CartItems = () => {
                             {/* Coupon Section - Mobile/Desktop */}
                             <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 p-6">
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                                    <Tag className="w-5 h-5 mr-2 text-[#dc9457]" />
+                                    <Tag className="w-5 h-5 mr-2 text-sandbrown" />
                                     Have a coupon code?
                                 </h3>
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <input
                                         type="text"
-                                        className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#dc9457] transition-colors"
+                                        className="flex-1 px-4 py-3 bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-sandbrown transition-colors"
                                         placeholder="Enter coupon code"
                                     />
-                                    <Button className="bg-[#dc9457] hover:bg-[#c58346] text-white font-semibold py-3 px-6 rounded-lg transition-colors whitespace-nowrap">
+                                    <Button className="bg-sandbrown hover:bg-[#c58346] text-white font-semibold py-3 px-6 rounded-lg transition-colors whitespace-nowrap">
                                         Apply Coupon
                                     </Button>
                                 </div>
@@ -177,7 +180,7 @@ const CartItems = () => {
                             <div className="lg:hidden">
                                 <Button
                                     onClick={() => router.push('/order-delivery')}
-                                    className="w-full bg-white dark:bg-neutral-900 border-2 border-[#dc9457] text-[#dc9457] hover:bg-[#dc9457] hover:text-white font-semibold py-4 rounded-lg transition-all"
+                                    className="w-full bg-white dark:bg-neutral-900 border-2 border-sandbrown text-sandbrown hover:bg-sandbrown hover:text-white font-semibold py-4 rounded-lg transition-all"
                                 >
                                     Continue Shopping
                                 </Button>
@@ -192,11 +195,15 @@ const CartItems = () => {
                                 </h2>
 
                                 <div className="space-y-4 mb-6">
-                                    <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                        <span>Subtotal ({cart.length} items)</span>
-                                        <span className="font-semibold text-gray-900 dark:text-white">
-                                            {formatNaira(grandTotal)}
-                                        </span>
+                                    <div>
+                                        
+                                                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                                                    <span>Subtotal ({cart.length} items)</span>
+                                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                                        {formatNaira(grandSubtotal)}
+                                                    </span>
+                                                </div>
+                                           
                                     </div>
                                     <div className="flex justify-between text-gray-600 dark:text-gray-400">
                                         <span>Delivery Fee</span>
@@ -217,7 +224,7 @@ const CartItems = () => {
                                         <span className="text-lg font-bold text-gray-900 dark:text-white">
                                             Total
                                         </span>
-                                        <span className="text-2xl font-bold text-[#dc9457]">
+                                        <span className="text-2xl font-bold text-sandbrown">
                                             {formatNaira(grandTotal)}
                                         </span>
                                     </div>
@@ -225,14 +232,14 @@ const CartItems = () => {
 
                                 <Button
                                     onClick={() => router.push('/checkout')}
-                                    className="w-full bg-gradient-to-r from-[#dc9457] to-[#f4a261] hover:opacity-90 text-white font-semibold py-4 rounded-lg text-lg transition-all mb-3"
+                                    className="w-full bg-linear-to-r from-sandbrown to-[#f4a261] hover:opacity-90 text-white font-semibold py-4 rounded-lg text-lg transition-all mb-3"
                                 >
                                     Proceed to Checkout
                                 </Button>
 
                                 <Button
                                     onClick={() => router.push('/order-delivery')}
-                                    className="w-full bg-transparent border-2 border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-gray-300 hover:border-[#dc9457] hover:text-[#dc9457] dark:hover:border-[#dc9457] dark:hover:text-[#dc9457] font-semibold py-4 rounded-lg transition-all hidden lg:block"
+                                    className="w-full bg-transparent border-2 border-gray-200 dark:border-neutral-800 text-gray-700 dark:text-gray-300 hover:border-sandbrown hover:text-sandbrown dark:hover:border-sandbrown dark:hover:text-sandbrown font-semibold py-4 rounded-lg transition-all hidden lg:block"
                                 >
                                     Continue Shopping
                                 </Button>

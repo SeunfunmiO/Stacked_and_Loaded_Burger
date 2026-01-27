@@ -1,25 +1,28 @@
 import StaffDashboardClient from "@/app/components/StaffDashboardClient";
 import { Bell, UserCheck2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 
 
 const Page = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+    <div className="min-h-screen bg-linear-to-br from-neutral-900 via-neutral-800 to-neutral-900">
       {/* Top Navigation */}
       <nav className="bg-neutral-800/50 backdrop-blur-xl border-b border-neutral-700 sticky top-0 z-50">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-480 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-[#dc9457] to-[#f4a261]">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-linear-to-r from-sandbrown to-[#f4a261]">
                 <span className="text-2xl">
-                  <Image
-                    alt='Burger'
-                    src={'/Cheeseburger.png'}
-                    width={40}
-                    height={40}
-                  />
+                  <Link href={'/'}>
+                    <Image
+                      alt='Burger'
+                      src={'/Cheeseburger.png'}
+                      width={40}
+                      height={40}
+                    />
+                  </Link>
                 </span>
               </div>
               <span className="ml-3 text-white font-bold text-xl">Stacked & Loaded Burger</span>
@@ -35,7 +38,7 @@ const Page = () => {
                   <p className="text-white text-sm font-medium">Staff Admin</p>
                   <p className="text-neutral-400 text-xs">Manager</p>
                 </div>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-gradient-to-r from-[#dc9457] to-[#f4a261]">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-linear-to-r from-sandbrown to-[#f4a261]">
                   <span className="text-xl"><UserCheck2 /></span>
                 </div>
               </div>

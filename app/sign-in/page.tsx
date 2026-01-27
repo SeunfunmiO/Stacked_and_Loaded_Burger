@@ -3,6 +3,7 @@ import { LogIn } from 'lucide-react';
 import SignInClient from '../components/SignInClient';
 import { NavigationMenuDemo } from '../components/Navbar';
 
+
 const Page = () => {
     return (
         <div>

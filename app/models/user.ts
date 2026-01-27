@@ -9,7 +9,6 @@ interface IUser {
     isAdmin: boolean
     isStaff: boolean
     isRider: boolean
-    confirmpassword: string
 }
 
 
@@ -40,10 +39,6 @@ const UserSchema = new Schema<IUser>({
         type: Boolean,
         default: false
     },
-    confirmpassword: {
-        type: String,
-        required: true
-    }
 }, { timestamps: true })
 
 const UserModel = models.User<IUser> || model("User", UserSchema)

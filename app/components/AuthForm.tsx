@@ -2,7 +2,7 @@
 
 import { register } from '@/lib/actions'
 import { useFormik } from 'formik'
-import { ArrowRight, Eye, EyeOff, LockIcon, Mail, User} from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, LockIcon, Mail, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
@@ -37,10 +37,15 @@ const AuthForm = () => {
             password: string,
             confirmpassword: string
         }) => {
+            const payload = {
+                fullname: values.fullname,
+                email: values.email,
+                password: values.password
+            }
             try {
                 setLoading(true);
 
-                const response = await register(values);
+                const response = await register(payload);
 
                 if (!response?.success) {
                     toast.error(response.message || "Email already in use");

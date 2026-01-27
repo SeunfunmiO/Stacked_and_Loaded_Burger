@@ -4,13 +4,13 @@ import CheckoutComponent from '../components/CheckoutComponent'
 import { verifyUser } from '@/lib/session'
 import { redirect } from 'next/navigation'
 
-const page = async() => {
+const page = async () => {
   const session = await verifyUser()
 
-  if(!session){
+  if (!session || !session.user || !session.user.id) {
     redirect('/sign-in')
   }
-  
+
   return (
     <div>
       <NavigationMenuDemo />

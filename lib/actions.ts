@@ -531,7 +531,7 @@ export const verifyPayment = async (orderId: string, reference: string) => {
 
         await OrderModel.findByIdAndUpdate(orderId, {
             paymentStatus: 'paid',
-            orderStatus: 'preparing',
+            orderStatus: 'pending',
         })
 
         return { success: true }
@@ -545,7 +545,7 @@ export const verifyPayment = async (orderId: string, reference: string) => {
 }
 
 export const updateOrderStatus = async (orderId: string,
-    status: 'pending' | 'confirmed' | 'preparing' | 'out-for-delivery' | 'delivered' | 'cancelled'
+    status: 'pending' | 'confirmed' | 'out-for-delivery' | 'delivered' | 'cancelled'
 ) => {
     try {
         await dbConnect();

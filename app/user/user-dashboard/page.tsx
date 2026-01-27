@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 const Page = async() => {
    const session = await verifyUser()
 
-   if(!session){
+   if(!session || !session.user || !session.user.id) {
     redirect('/sign-in')
    }
 

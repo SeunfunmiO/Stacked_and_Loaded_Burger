@@ -178,7 +178,6 @@ const OrderItemSchema = new Schema<IOrderItem>(
 type OrderStatus =
      'pending'
     | 'confirmed'
-    | 'preparing'
     | 'out-for-delivery'
     | 'delivered'
     | 'cancelled'
@@ -243,7 +242,6 @@ const OrderSchema = new Schema<IOrder>(
             enum: [
                 'pending',
                 'confirmed',
-                'preparing',
                 'out-for-delivery',
                 'delivered',
                 'cancelled'

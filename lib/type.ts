@@ -35,7 +35,7 @@ export interface StaffOrder {
   customerName: string;
   items: string;
   total: string;
-  status: 'pending' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+  status: 'pending' | 'ready' | 'completed' | 'cancelled';
   time: string;
   priority: 'normal' | 'urgent';
 }
@@ -281,7 +281,6 @@ export interface CreateOrderInput extends PlaceOrderPayload {
 export type OrderStatus =
   | 'pending'
   | 'confirmed'
-  | 'preparing'
   | 'out-for-delivery'
   | 'delivered'
   | 'cancelled'
@@ -302,12 +301,13 @@ export interface IOrder {
   deliveryFee: number
   subtotal: number
   total: number
+  picture: string
   paymentMethod: 'card' | 'transfer' | 'cash'
   paymentStatus: 'pending' | 'paid' | 'failed'
   createdAt: string
+  paymentReference:string
   status: 'pending'
   | 'confirmed'
-  | 'preparing'
   | 'out-for-delivery'
   | 'delivered'
   | 'cancelled';

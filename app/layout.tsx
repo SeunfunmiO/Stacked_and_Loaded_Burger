@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons:{
+    icon:'/favicon.png',
+  },
   title: "Stacked & Loaded Burger",
   description: "Big Burgers , Big Flavours",
 };

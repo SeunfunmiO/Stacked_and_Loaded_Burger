@@ -4,30 +4,29 @@ import React, { useEffect, useState } from 'react';
 import {
     ShoppingBag,
     Users,
-    TrendingUp,
     Clock,
     CheckCircle,
     XCircle,
     AlertCircle,
-    Package,
     ChefHat,
-    Bell,
     Search,
     Filter,
     MoreVertical,
-    User2,
     ThumbsUp,
-    Bike
+    Bike,
+    Package,
+    Plus
 } from 'lucide-react';
-import { IOrder, StaffTabType } from '@/lib/type';
-import { useRouter } from 'next/navigation';
+import { IOrder } from '@/lib/type';
 import { formatNaira, NairaIcon } from '@/app/components/NairaIcon';
 import { staffMembers } from '@/lib/MapItems';
 import { getAllOrders, updateOrderStatus } from '@/lib/actions';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const StaffDashboardClient = () => {
-    const [activeTab, setActiveTab] = useState<StaffTabType>('orders');
+    // const [activeTab, setActiveTab] = useState<StaffTabType>('orders');
+    const router = useRouter()
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [orders, setOrders] = useState<IOrder[]>([]);
     const [activeOrders, setActiveOrders] = useState<IOrder[]>([]);
@@ -37,10 +36,11 @@ const StaffDashboardClient = () => {
         customersToday: 0,
         ordersTrend: ''
     });
-    const router = useRouter();
+    const [loadingId, setLoadingId] = useState<string | null>(null);
+
     const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
-    // Fetch orders and compute stats
+
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -55,7 +55,7 @@ const StaffDashboardClient = () => {
                 // Active orders
                 const active = res.data.filter(
                     (order: IOrder) =>
-                        ['pending', 'preparing', 'confirmed', 'out-for-delivery'].includes(order.status)
+                        ['pending', 'confirmed', 'out-for-delivery'].includes(order.status)
                 );
                 setActiveOrders(active);
 
@@ -110,19 +110,17 @@ const StaffDashboardClient = () => {
     const getStatusColor = (status: IOrder['status']): string => {
         switch (status) {
             case 'pending':
-                return 'bg-yellow-500/20 text-green-400';
-            case 'out-for-delivery':
-                return 'bg-sandbrown-500/20 text-sandbrown-400';
+                return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30 ';
             case 'confirmed':
-                return 'bg-green-500/20 text-green-400';
+                return 'bg-blue-500/20 border-blue-500/30 text-blue-400 hover:bg-blue-500/30'
+            case 'out-for-delivery':
+                return 'bg-orange-500/20 border-orange-500/30 text-orange-400 hover:bg-orange-500/30'
             case 'delivered':
-                return 'bg-green-500/20 text-green-400';
-            case 'preparing':
-                return 'bg-yellow-500/20 text-yellow-400';
+                return 'bg-green-500/20 border-green-500/30 text-green-400 hover:bg-green-500/30'
             case 'cancelled':
-                return 'bg-red-500/20 text-red-400';
+                return 'bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30'
             default:
-                return 'bg-neutral-500/20 text-neutral-400';
+                return 'bg-gray-500/20 border-gray-500/30 text-gray-400 hover:bg-gray-500/30'
         }
     };
 
@@ -130,8 +128,6 @@ const StaffDashboardClient = () => {
         switch (status) {
             case 'pending':
                 return <Clock className="w-4 h-4" />;
-            case 'preparing':
-                return <ChefHat className="w-4 h-4" />;
             case 'confirmed':
                 return <ThumbsUp className="w-4 h-4" />;
             case 'out-for-delivery':
@@ -146,31 +142,34 @@ const StaffDashboardClient = () => {
     };
 
     const handleStatusChange = async (
-  orderId: string,
-  newStatus: IOrder['status']
-) => {
-  try {
-    const res = await updateOrderStatus(orderId, newStatus);
+        orderId: string,
+        newStatus: IOrder['status']
+    ) => {
+        setLoadingId(orderId);
+        try {
+            const res = await updateOrderStatus(orderId, newStatus);
 
-    if (!res?.success) {
-      toast.error(res?.message || 'Failed to update order');
-      return;
-    }
+            if (!res?.success) {
+                toast.error(res?.message || 'Failed to update order');
+                return;
+            }
 
-    setActiveOrders((prev) =>
-      prev.map((order) =>
-        order._id === orderId
-          ? { ...order, status: newStatus }
-          : order
-      )
-    );
+            setActiveOrders((prev) =>
+                prev.map((order) =>
+                    order._id === orderId
+                        ? { ...order, status: newStatus }
+                        : order
+                )
+            );
 
-    toast.success('Order status updated!');
-  } catch (error) {
-    console.error(error);
-    toast.error('Something went wrong');
-  }
-};
+            toast.success('Order status updated!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Something went wrong');
+        } finally {
+            setLoadingId(null);
+        }
+    };
 
 
 
@@ -196,12 +195,12 @@ const StaffDashboardClient = () => {
 
 
     return (
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-480 mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-[#dc9457] to-[#f4a261]">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r from-sandbrown to-[#f4a261]">
                             <ShoppingBag className="w-6 h-6 text-white" />
                         </div>
                         <span className="text-green-400 text-sm font-medium">{statsState.ordersTrend}</span>
@@ -212,7 +211,7 @@ const StaffDashboardClient = () => {
 
                 <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-400">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r from-blue-500 to-blue-400">
                             <Clock className="w-6 h-6 text-white" />
                         </div>
                         <span className="text-yellow-400 text-sm font-medium">Live</span>
@@ -223,7 +222,7 @@ const StaffDashboardClient = () => {
 
                 <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-green-500 to-green-400">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r from-green-500 to-green-400">
                             <NairaIcon />
                         </div>
                         <span className="text-green-400 text-sm font-medium">{statsState.revenueTrend}</span>
@@ -234,7 +233,7 @@ const StaffDashboardClient = () => {
 
                 <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-purple-400">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r from-purple-500 to-purple-400">
                             <Users className="w-6 h-6 text-white" />
                         </div>
                         <span className="text-green-400 text-sm font-medium">+{statsState.customersToday}</span>
@@ -258,7 +257,7 @@ const StaffDashboardClient = () => {
                                         placeholder="Search orders..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 pr-4 py-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#dc9457] transition-colors"
+                                        className="pl-10 pr-4 py-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-sandbrown transition-colors"
                                     />
                                 </div>
                                 <button className="p-2 bg-neutral-700/50 border border-neutral-700 rounded-lg text-neutral-400 hover:text-white hover:border-neutral-600 transition-all">
@@ -310,7 +309,7 @@ const StaffDashboardClient = () => {
                                             <span className="text-sm font-medium capitalize">{order.status}</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            {['confirmed', 'preparing', 'out-for-delivery', 'delivered'].map((statusOption) => (
+                                            {['confirmed', 'out-for-delivery', 'delivered'].map((statusOption) => (
                                                 <button
                                                     key={statusOption}
                                                     onClick={() => handleStatusChange(order._id, statusOption as IOrder['status'])}
@@ -348,11 +347,37 @@ const StaffDashboardClient = () => {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[#dc9457] font-bold">{staff.ordersCompleted}</p>
+                                        <p className="text-sandbrown font-bold">{staff.ordersCompleted}</p>
                                         <p className="text-neutral-500 text-xs">orders</p>
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                    <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
+                        <h2 className="text-white text-xl font-bold mb-4">Quick Actions</h2>
+                        <div className="space-y-3">
+                            <button
+                                onClick={() => router.push('/staff/manage-orders')}
+                                className="w-full py-3 px-4 bg-linear-to-r from-sandbrown7] to-[#f4a261]
+                             text-white rounded-lg font-medium hover:scale-105 transition-all flex items-center justify-center">
+                                <ChefHat className="w-5 h-5 mr-2" />
+                                Manage Orders
+                            </button>
+                            <button
+                                onClick={() => router.push('/staff/manage-menu')}
+                                className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700
+                             text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
+                                <Package className="w-5 h-5 mr-2" />
+                                Manage Menu
+                            </button>
+                            <button 
+                            onClick={()=>router.push('/staff/manage-menu-options')}
+                            className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700
+                             text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
+                                <Plus className="w-5 h-5 mr-2" />
+                               Manage Menu Options
+                            </button>
                         </div>
                     </div>
                 </div>

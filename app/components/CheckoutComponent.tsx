@@ -13,6 +13,7 @@ import { formatNaira } from './NairaIcon'
 
 import { CartItem, PlaceOrderPayload } from '@/lib/type'
 import { createOrder, getCustomer } from '@/lib/actions'
+import Image from 'next/image'
 
 declare global {
     interface Window {
@@ -40,13 +41,18 @@ interface CheckoutFormValues {
     note: string
 }
 
-const CheckoutComponent = ({userId}:{userId:string}) => {
+const CheckoutComponent = ({ userId }: { userId: string }) => {
     const router = useRouter()
 
     const [cart, setCart] = useState<CartItem[]>([])
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer' | 'cash'>('card')
     const [loading, setLoading] = useState(false)
-   
+    const [user, setUser] = useState({
+        fullname: '',
+        email: ''
+    })
+
+
     useEffect(() => {
         const storedCart = localStorage.getItem('cart')
         if (storedCart) setCart(JSON.parse(storedCart))
@@ -60,7 +66,9 @@ const CheckoutComponent = ({userId}:{userId:string}) => {
                 if (!res.success) {
                     return toast.error(res.message)
                 }
-             
+
+                setUser(res.user)
+
             } catch (error) {
                 console.error('Cannot get user', error)
             }
@@ -85,12 +93,13 @@ const CheckoutComponent = ({userId}:{userId:string}) => {
 
     const formik = useFormik<CheckoutFormValues>({
         initialValues: {
-            fullname: '',
-            email: '',
+            fullname: user.fullname || '',
+            email: user.email || '',
             address: '',
             phone: '',
             note: ''
         },
+        enableReinitialize:true,
         validationSchema: yup.object({
             fullname: yup.string().required('Full name is required'),
             email: yup.string().email('Invalid email').required('Email is required'),
@@ -307,9 +316,33 @@ const CheckoutComponent = ({userId}:{userId:string}) => {
 
                 <div className="flex-1">
                     <div className="border rounded p-5 mb-6">
-                        <p>Subtotal: {formatNaira(subtotal)}</p>
-                        <p>Delivery: {formatNaira(deliveryFee)}</p>
-                        <p className="font-bold">Total: {formatNaira(grandTotal)}</p>
+                        {
+                            cart.map((each) => (
+                                <div key={each.productId} className='flex flex-col gap-2'>
+                                    <div className="flex justify-between gap-2 items-center mb-2">
+                                        <h4 className="font-bold text-lg">{each.name}</h4>
+                                        <span className="font-medium text-xs">
+                                            (qty : {each.quantity})
+                                        </span>
+
+                                    </div>
+                                </div>
+                            ))
+                        }
+                        <div className="flex justify-between font-bold">
+                            Subtotal
+                            <p> {formatNaira(subtotal)}</p>
+                        </div>
+
+                        <div className="flex justify-between items-center font-bold">
+                            Delivery Fee
+                            <p> {formatNaira(deliveryFee)}</p>
+                        </div>
+
+                        <div className="flex justify-between font-bold">
+                            Total
+                            <p> {formatNaira(grandTotal)}</p>
+                        </div>
                     </div>
 
                     <RadioGroup
@@ -318,15 +351,26 @@ const CheckoutComponent = ({userId}:{userId:string}) => {
                         className="flex flex-col gap-3 mb-6"
                     >
                         <div className="flex items-center gap-3">
-                            <RadioGroupItem value="card" id="card" />
+                            <RadioGroupItem style={{ backgroundColor: 'white' }}
+                                value="card"
+                                id="card"
+                            />
                             <label htmlFor="card">Card</label>
                         </div>
                         <div className="flex items-center gap-3">
-                            <RadioGroupItem value="transfer" id="transfer" />
+                            <RadioGroupItem
+                                style={{ backgroundColor: 'white' }}
+                                value="transfer"
+                                id="transfer"
+                            />
                             <label htmlFor="transfer">Bank Transfer</label>
                         </div>
                         <div className="flex items-center gap-3">
-                            <RadioGroupItem value="cash" id="cash" />
+                            <RadioGroupItem
+                                style={{ backgroundColor: 'white' }}
+                                value="cash"
+                                id="cash"
+                            />
                             <label htmlFor="cash">Cash on Delivery</label>
                         </div>
                     </RadioGroup>
@@ -336,9 +380,9 @@ const CheckoutComponent = ({userId}:{userId:string}) => {
                     text-white hover:bg-transparent hover:border hover:border-sandbrown hover:text-sandbrown bg-sandbrown">
                         {loading ? 'Processing...' : 'Pay & Place Order'}
                     </Button>
-                </div>
-            </form>
-        </div>
+                </div >
+            </form >
+        </div >
     )
 }
 
