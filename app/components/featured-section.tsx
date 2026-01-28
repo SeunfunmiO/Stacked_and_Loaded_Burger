@@ -11,12 +11,12 @@ const Featuredsection = () => {
                     <h3
                         className="font-bold lg:text-xl text-center py-3 hidden md:block
                         text-gray-500 uppercase border-t-2 border-b-2 border-gray-500">
-                        Don't need a silver fork to eat a good burger
+                        Don&apos;t need a silver fork to eat a good burger
                     </h3>
 
                     <h3
                         className="font-bold items-center text-2xl justify-center lg:text-3xl text-center py-3 
-                        text-[#dc9457] uppercase border-t-2 border-b-2 border-[#dc9457]">
+                        text-sandbrown uppercase border-t-2 border-b-2 border-sandbrown">
                         Our Burgers
                     </h3>
 

@@ -23,7 +23,7 @@ const Deliveryorder = () => {
                     height={600}
                 />
 
-                <div className="bg-neutral-500 max-w-full h-[500px] lg:h-[600px] flex flex-col justify-center
+                <div className="bg-neutral-500 max-w-full h-125 lg:h-150 flex flex-col justify-center
                      text-neutral-200 gap-3 px-10">
                     <div>
                         <h1 className="font-extrabold text-3xl">OUR</h1>
@@ -49,7 +49,7 @@ const Deliveryorder = () => {
                 </div>
 
 
-                <div className="bg-slate-200 max-w-full text-gray-900 h-[500px] lg:h-[600px] flex flex-col justify-center
+                <div className="bg-slate-200 max-w-full text-gray-900 h-125 lg:h-150 flex flex-col justify-center
                     px-10 gap-3">
                     <div>
                         <h1 className="font-extrabold text-3xl">ORDER</h1>
