@@ -98,7 +98,7 @@ const Error = ({ error, reset }: { error: Error; reset: () => void }) => {
                             <p className="text-xs text-gray-600 dark:text-gray-400">Get help from our team</p>
                         </button>
                         <button
-                            onClick={() => router.push('/menu')}
+                            onClick={() => router.push('/order-delivery')}
                             className="p-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl hover:border-sandbrown dark:hover:border-sandbrown transition-all group"
                         >
                             <div className="text-2xl mb-2">🍔</div>
@@ -106,7 +106,7 @@ const Error = ({ error, reset }: { error: Error; reset: () => void }) => {
                             <p className="text-xs text-gray-600 dark:text-gray-400">Check out our burgers</p>
                         </button>
                         <button
-                            onClick={() => router.push('/orders')}
+                            onClick={() => router.push('/user/track-orders')}
                             className="p-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl hover:border-sandbrown dark:hover:border-sandbrown transition-all group"
                         >
                             <div className="text-2xl mb-2">📦</div>
