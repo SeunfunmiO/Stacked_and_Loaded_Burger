@@ -1,7 +1,7 @@
-// import AllOrder from '@/app/components/AllOrder'
+import AllOrder from '@/app/components/AllOrder'
 import { formatNaira } from '@/app/components/NairaIcon'
-// import { NavigationMenuDemo } from '@/app/components/Navbar'
-// import OrderCat from '@/app/components/OrderCat'
+import { NavigationMenuDemo } from '@/app/components/Navbar'
+import OrderCat from '@/app/components/OrderCat'
 import ProductModel from '@/app/models/product'
 import dbConnect from '@/lib/dbconnect'
 import { Metadata } from 'next'
@@ -39,8 +39,8 @@ const Page = async ({ params }: PageProps) => {
         <div
             className='bg-white dark:bg-black h-screen'
         >
-            {/* <NavigationMenuDemo />
-            <OrderCat /> */}
+            <NavigationMenuDemo />
+            <OrderCat />
             <div
                 className='flex items-center md:items-start flex-col md:flex-row justify-evenly bg-white'
             >
@@ -63,7 +63,7 @@ const Page = async ({ params }: PageProps) => {
 
                     <h3 className='text-black'>{product.description}</h3>
 
-                    {/* <AllOrder _id={_id} /> */}
+                    <AllOrder _id={product._id} />
 
                     <p
                         className="text-black font-medium"
