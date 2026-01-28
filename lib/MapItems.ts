@@ -59,13 +59,11 @@ export const stats: Stats = {
     revenueTrend: '+8%'
 };
 
-export const orders: StaffOrder[] = [
-    { id: '#ORD-001', customerName: 'John Smith', items: 'Classic Burger x2, Fries', total: '₦28.99', status: 'pending', time: '2 min ago', priority: 'urgent' },
-    { id: '#ORD-002', customerName: 'Sarah Johnson', items: 'Cheese Burger, Coke', total: '₦16.50', status: 'preparing', time: '5 min ago', priority: 'normal' },
-    { id: '#ORD-003', customerName: 'Mike Wilson', items: 'Bacon Burger, Onion Rings', total: '₦22.00', status: 'ready', time: '8 min ago', priority: 'normal' },
-    { id: '#ORD-004', customerName: 'Emily Davis', items: 'Double Burger x3, Fries x2', total: '₦45.99', status: 'preparing', time: '10 min ago', priority: 'urgent' },
-    { id: '#ORD-005', customerName: 'David Brown', items: 'Classic Burger, Salad', total: '₦18.99', status: 'completed', time: '15 min ago', priority: 'normal' }
-];
+// export const orders: StaffOrder[] = [
+//     { id: '#ORD-001', customerName: 'John Smith', items: 'Classic Burger x2, Fries', total: '₦28.99', status: 'pending', time: '2 min ago', priority: 'urgent' },
+//     { id: '#ORD-003', customerName: 'Mike Wilson', items: 'Bacon Burger, Onion Rings', total: '₦22.00', status: 'ready', time: '8 min ago', priority: 'normal' },
+//     { id: '#ORD-005', customerName: 'David Brown', items: 'Classic Burger, Salad', total: '₦18.99', status: 'completed', time: '15 min ago', priority: 'normal' }
+// ];
 
 export const staffMembers: Staff[] = [
     { id: '1', name: 'Alex Turner', role: 'Head Chef', avatar: '👨‍🍳', status: 'active', ordersCompleted: 45 },

@@ -99,7 +99,7 @@ const CheckoutComponent = ({ userId }: { userId: string }) => {
             phone: '',
             note: ''
         },
-        enableReinitialize:true,
+        enableReinitialize: true,
         validationSchema: yup.object({
             fullname: yup.string().required('Full name is required'),
             email: yup.string().email('Invalid email').required('Email is required'),
@@ -138,7 +138,7 @@ const CheckoutComponent = ({ userId }: { userId: string }) => {
                         name: t.name,
                         price: t.price
                     }))
-                }))
+                })),
             }
 
             const res = await createOrder({

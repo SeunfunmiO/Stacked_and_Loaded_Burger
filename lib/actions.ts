@@ -492,7 +492,7 @@ export const createOrder = async (data: CreateOrderInput) => {
             note: data.note,
             paymentMethod: data.paymentMethod,
             paymentStatus: data.paymentStatus,
-            paymentReference: data.paymentReference
+            paymentReference: data.paymentReference,
         })
 
         return {
@@ -727,3 +727,4 @@ export const deleteAllProducts = async () => {
     }
 }
 
+// deleteAccount

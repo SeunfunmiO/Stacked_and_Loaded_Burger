@@ -25,12 +25,12 @@ const Page = () => {
                   </Link>
                 </span>
               </div>
-              <span className="ml-3 text-white font-bold text-xl">Stacked & Loaded Burger</span>
-              <span className="ml-3 px-3 py-1 bg-neutral-700 rounded-full text-neutral-400 text-sm">Staff Panel</span>
+              <span className="ml-3 text-white text-sm font-bold md:text-xl">Stacked & Loaded Burger</span>
+              <span className="ml-3 px-3 py-1 bg-neutral-700 rounded-full text-[10px] text-neutral-400 md:text-sm">Staff Panel</span>
             </div>
             <div className="flex items-center space-x-4">
               <button className="text-neutral-400 hover:text-white transition-colors relative">
-                <Bell className="w-6 h-6" />
+                <Bell className="md:w-6 md:h-6 w-4 h-4" />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
               <div className="flex items-center space-x-3 cursor-pointer">
@@ -38,8 +38,9 @@ const Page = () => {
                   <p className="text-white text-sm font-medium">Staff Admin</p>
                   <p className="text-neutral-400 text-xs">Manager</p>
                 </div>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-linear-to-r from-sandbrown to-[#f4a261]">
-                  <span className="text-xl"><UserCheck2 /></span>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white 
+                bg-linear-to-r from-sandbrown to-[#f4a261] ">
+                  <span className="w-6 h-6"><UserCheck2 /></span>
                 </div>
               </div>
             </div>

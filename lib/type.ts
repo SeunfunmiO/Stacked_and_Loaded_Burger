@@ -199,7 +199,7 @@ export interface CartItem {
   quantity: number
   options: SelectedOptions
   subtotal: number
-  image: string
+ image:string
 }
 
 export interface CartProduct {
@@ -244,7 +244,7 @@ export interface CartItem {
     beverage: string
     toppings: IToppingForm[]
   }
-  subtotal: number
+  subtotal: number,
 }
 
 export interface CartItemPayload {

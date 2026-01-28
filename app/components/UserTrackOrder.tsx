@@ -56,7 +56,6 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
         switch (status) {
             case 'placed': return <Package className={`w-5 h-5 ${iconClass}`} />
             case 'confirmed': return <CheckCircle className={`w-5 h-5 ${iconClass}`} />
-            case 'preparing': return <Clock className={`w-5 h-5 ${iconClass}`} />
             case 'ready': return <Package className={`w-5 h-5 ${iconClass}`} />
             case 'out-for-delivery': return <Bike className={`w-5 h-5 ${iconClass}`} />
             case 'delivered': return <Home className={`w-5 h-5 ${iconClass}`} />
@@ -69,7 +68,6 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
         const allStatuses = [
             { status: 'placed', label: 'Order Placed' },
             { status: 'confirmed', label: 'Order Confirmed' },
-            { status: 'preparing', label: 'Preparing' },
             { status: 'ready', label: 'Ready for Pickup' },
             { status: 'out-for-delivery', label: 'Out for Delivery' },
             { status: 'delivered', label: 'Delivered' }
@@ -154,7 +152,7 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                     <div className="space-y-6">
                         {/* Order Info Card */}
                         <div className="bg-white dark:bg-neutral-950 rounded-2xl border border-gray-200 dark:border-neutral-800 p-6">
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex flex-col md:flex-row md:items-center items-start justify-between mb-4">
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                     Order #{selectedOrder.paymentReference || selectedOrder._id}
                                 </h2>

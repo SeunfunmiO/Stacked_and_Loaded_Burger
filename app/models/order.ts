@@ -1,122 +1,3 @@
-// import { Schema, model, models, Types } from 'mongoose'
-
-
-
-
-
-
-// interface IOrder {
-//     user: Types.ObjectId
-//     items: IOrderItems[]
-//     note: string
-//     subtotal: number
-//     deliveryFee: number
-//     totalAmount: number
-//     paymentStatus: string
-//     orderStatus: string
-// }
-
-
-// const OrderSchema = new Schema<IOrder>(
-//     {
-//         user: {
-//             type: Types.ObjectId,
-//             ref: 'User',
-//             required: true,
-//         },
-
-//         items: [
-//             {
-//                 product: {
-//                     type: Types.ObjectId,
-//                     ref: 'Product',
-//                     required: true,
-//                 },
-
-//                 name: {
-//                     type: String,
-//                     required: true,
-//                 },
-
-//                 price: {
-//                     type: Number,
-//                     required: true,
-//                 },
-
-//                 quantity: {
-//                     type: Number,
-//                     required: true,
-//                     default: 1,
-//                 },
-
-//                 meatType: {
-//                     type: String,
-//                     required: true,
-//                 },
-
-//                 side: {
-//                     type: String,
-//                     required: true,
-//                 },
-
-//                 beverage: {
-//                     type: String,
-//                     required: true,
-//                 },
-
-//                 toppings: [
-//                     {
-//                         name: {
-//                             type: String,
-//                         },
-//                         price: {
-//                             type: Number,
-//                         },
-//                     },
-//                 ],
-//                 itemTotal: {
-//                     type: Number,
-//                     required: true,
-//                 },
-//             },
-//         ],
-
-//         subtotal: {
-//             type: Number,
-//             required: true,
-//         },
-
-//         deliveryFee: {
-//             type: Number,
-//             default: 0,
-//         },
-
-//         totalAmount: {
-//             type: Number,
-//             required: true,
-//         },
-
-//         paymentStatus: {
-//             type: String,
-//             enum: ['pending', 'paid', 'failed'],
-//             default: 'pending',
-//         },
-
-//         orderStatus: {
-//             type: String,
-//             enum: ['pending', 'preparing', 'ready', 'Rider picked up', 'Rider is on his way', 'delivered', 'cancelled'],
-//             default: 'pending',
-//         },
-
-//         note: {
-//             type: String,
-//         },
-//     },
-//     { timestamps: true }
-// )
-
-// const OrderModel = models.Order || model('Order', OrderSchema)
-// export default OrderModel
 
 
 import mongoose, { Schema, Document, Types } from 'mongoose'
@@ -176,7 +57,7 @@ const OrderItemSchema = new Schema<IOrderItem>(
 /* ---------------- ORDER ---------------- */
 
 type OrderStatus =
-     'pending'
+    'pending'
     | 'confirmed'
     | 'out-for-delivery'
     | 'delivered'
@@ -196,7 +77,7 @@ export interface IOrder extends Document {
     paymentMethod: 'card' | 'transfer' | 'cash'
     paymentStatus: 'pending' | 'paid' | 'failed'
     paymentReference?: string,
-    createdAt:Date
+    createdAt: Date
 }
 
 const OrderSchema = new Schema<IOrder>(
@@ -253,7 +134,7 @@ const OrderSchema = new Schema<IOrder>(
         createdAt: {
             type: Date,
             default: new Date()
-        }
+        },
     },
 )
 

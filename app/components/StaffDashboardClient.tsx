@@ -20,7 +20,7 @@ import {
 import { IOrder } from '@/lib/type';
 import { formatNaira, NairaIcon } from '@/app/components/NairaIcon';
 import { staffMembers } from '@/lib/MapItems';
-import { getAllOrders, updateOrderStatus } from '@/lib/actions';
+import { deleteAllProducts, getAllOrders, updateOrderStatus } from '@/lib/actions';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
@@ -52,6 +52,7 @@ const StaffDashboardClient = () => {
 
                 setOrders(res.data);
 
+
                 // Active orders
                 const active = res.data.filter(
                     (order: IOrder) =>
@@ -66,7 +67,9 @@ const StaffDashboardClient = () => {
                         new Date(order.createdAt).toDateString() === today.toDateString() &&
                         order.status === 'delivered'
                 );
+
                 const totalRevenue = revenueOrders.reduce((total: number, order: IOrder) => total + order.total, 0);
+                
 
                 // Revenue yesterday
                 const yesterday = new Date();
@@ -193,6 +196,14 @@ const StaffDashboardClient = () => {
         );
     });
 
+    // const deleteAll = async () => {
+    //     try {
+    //         await deleteAllProducts()
+    //     } catch (error) {
+
+    //     }
+    // }
+
 
     return (
         <div className="max-w-480 mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -247,7 +258,7 @@ const StaffDashboardClient = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div className="lg:col-span-8">
                     <div className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6">
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex md:items-center items-start flex-col md:flex-row mb-3 gap-2 md:gap-0 justify-between md:mb-6">
                             <h2 className="text-white text-xl font-bold">Active Orders</h2>
                             <div className="flex items-center space-x-3">
                                 <div className="relative">
@@ -371,12 +382,12 @@ const StaffDashboardClient = () => {
                                 <Package className="w-5 h-5 mr-2" />
                                 Manage Menu
                             </button>
-                            <button 
-                            onClick={()=>router.push('/staff/manage-menu-options')}
-                            className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700
+                            <button
+                                onClick={() => router.push('/staff/manage-menu-options')}
+                                className="w-full py-3 px-4 bg-neutral-700/50 border border-neutral-700
                              text-white rounded-lg font-medium hover:bg-neutral-700 transition-all flex items-center justify-center">
                                 <Plus className="w-5 h-5 mr-2" />
-                               Manage Menu Options
+                                Manage Menu Options
                             </button>
                         </div>
                     </div>
