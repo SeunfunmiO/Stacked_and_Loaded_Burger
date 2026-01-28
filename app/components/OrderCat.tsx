@@ -1,3 +1,6 @@
+'use client'
+
+
 import { OrderCategories } from '@/lib/order-sorting'
 import Image from 'next/image'
 import React from 'react'
