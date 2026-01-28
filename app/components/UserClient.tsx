@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ShoppingBag, Star, Award, Clock, MapPin, User, Settings, LogOut, Package, Heart, Bell, ChevronRight, TrendingUp, ChefHat } from 'lucide-react';
+import { ShoppingBag, Star, Award, Clock, MapPin, User, Settings, LogOut, Package, Heart, Bell, ChevronRight, TrendingUp, ChefHat, ThumbsUp, Bike, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { FavoriteItem, IOrder, OrderItemPayload, Reward, TabType } from '@/lib/type';
 import { getCustomer, getSingleOrder, logOut, updateUser } from '@/lib/actions';
@@ -132,6 +132,23 @@ const UserClient = ({ userId }: { userId: string }) => {
         }
     };
 
+    const getStatusIcon = (status: IOrder['status']) => {
+            switch (status) {
+                case 'pending':
+                    return <Clock className="w-4 h-4" />;
+                case 'confirmed':
+                    return <ThumbsUp className="w-4 h-4" />;
+                case 'out-for-delivery':
+                    return <Bike className="w-4 h-4" />;
+                case 'delivered':
+                    return <CheckCircle className="w-4 h-4" />;
+                case 'cancelled':
+                    return <XCircle className="w-4 h-4" />;
+                default:
+                    return <AlertCircle className="w-4 h-4" />;
+            }
+        };
+
     // const orderAgain = (orders) => {
     //     if (!orders || orders.length === 0) return;
 
@@ -159,7 +176,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     />
                                 </span>
                             </div>
-                            <span className="ml-3 text-white font-bold text-xl">Stacked & Loaded Burger</span>
+                            <span className="ml-3 text-white font-bold text-sm md:text-xl">Stacked & Loaded Burger</span>
                         </div>
                         <div className="flex items-center space-x-4">
                             <button className="text-neutral-400 hover:text-white transition-colors relative">
@@ -371,15 +388,15 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div >
-                                                    <div className="flex items-center justify-between">
-                                                        <h1 className="font-bold">Total</h1>
+                                                <div className='flex flex-col items-start'>
+                                                    <div className="flex items-center">
+                                                        <h1 className="font-bold">Total : </h1>
                                                         <p className="text-white font-bold">{formatNaira(order.total)}</p>
                                                     </div>
-                                                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
-                                                        ${getStatusColor(order.status)}`}>
-                                                        {order.status}
-                                                    </span>
+                                                    <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
+                                                        {getStatusIcon(order.status)}
+                                                        <span className="text-sm font-medium capitalize">{order.status}</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -492,12 +509,12 @@ const UserClient = ({ userId }: { userId: string }) => {
                                 <div className="space-y-4">
                                     {orders.map((order) => (
                                         <div key={order._id} className="p-4 bg-neutral-700/30 rounded-lg border border-neutral-700">
-                                            <div className="flex items-center justify-between mb-3">
+                                            <div className="flex flex-col md:flex-row items-start gap-2 md:gap-0 md:items-center justify-between mb-3">
                                                 <h3 className="text-white font-bold">{order.paymentReference}</h3>
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium 
-                                                    ${getStatusColor(order.status)}`}>
-                                                    {order.status}
-                                                </span>
+                                                <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
+                                                    {getStatusIcon(order.status)}
+                                                    <span className="text-sm font-medium capitalize">{order.status}</span>
+                                                </div>
                                             </div>
                                             <div className="text-neutral-400 text-sm mb-2"> {order.items.map((item, index) => (
                                                 <div key={index} className="border-b py-2">

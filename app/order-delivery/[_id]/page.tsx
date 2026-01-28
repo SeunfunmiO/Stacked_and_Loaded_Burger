@@ -1,31 +1,26 @@
 import AllOrder from '@/app/components/AllOrder'
+import Footer from '@/app/components/Footer'
 import { formatNaira } from '@/app/components/NairaIcon'
 import { NavigationMenuDemo } from '@/app/components/Navbar'
 import OrderCat from '@/app/components/OrderCat'
 import ProductModel from '@/app/models/product'
 import dbConnect from '@/lib/dbconnect'
-import { Types } from 'mongoose'
 import { Metadata } from 'next'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
 import React from 'react'
 
-type PageProps = {
-    params: {
-        _id: string
-    }
-}
+// type PageProps = {
+//     params: {
+//         _id: string
+//     }
+// }
 
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
     await dbConnect()
-    const productId = params._id
-    if (!Types.ObjectId.isValid(productId)) {
-        notFound()
-    }
+    const {_id} = await params
+   
 
-    const product = await ProductModel.findById(
-        new Types.ObjectId(productId)
-    )
+    const product = await ProductModel.findById(_id)
 
     return {
         title: `Shop - Stacked & Loaded Burger | ${product.name} `,
@@ -38,17 +33,13 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     }
 }
 
-const Page = async ({ params }: PageProps) => {
+const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
     await dbConnect()
-    const productId = params._id
-    const product = await ProductModel.findById(
-        new Types.ObjectId(productId)
-    )
+    const {_id} = await params
+    const product = await ProductModel.findById(_id)
+    console.log(product)
 
-    if (!product) {
-        notFound()
-    }
-
+   
     return (
         <div
             className='bg-white dark:bg-black h-screen'
@@ -77,7 +68,7 @@ const Page = async ({ params }: PageProps) => {
 
                     <h3 className='text-black'>{product.description}</h3>
 
-                    <AllOrder _id={productId} />
+                    <AllOrder _id={_id} />
 
                     <p
                         className="text-black font-medium"
@@ -86,6 +77,7 @@ const Page = async ({ params }: PageProps) => {
                     </p>
                 </div>
             </div>
+            <Footer/>
         </div>
     )
 }
