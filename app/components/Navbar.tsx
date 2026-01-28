@@ -48,7 +48,7 @@ export function NavigationMenuDemo() {
                 className="block lg:hidden border-t border-b border-sandbrown"
             >
                 <Link
-                    href='/order-now'
+                    href='/order-delivery'
                     className="font-bold py-2">
                     ORDER ONLINE
                 </Link>
