@@ -340,7 +340,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                              bg-neutral-700/30 rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
                                                 <div className="flex items-center space-x-4">
                                                     <div>
-                                                        <p className="text-sandbrown font-medium">ORDERID : {order.paymentReference}</p>
+                                                        <p className="font-medium">ORDERID : {order.paymentReference}</p>
                                                         <div className="text-neutral-400 text-sm">
                                                             {order.items.map((item, index) => (
                                                                 <div key={index} className="border-b py-2">
@@ -493,7 +493,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     {orders.map((order) => (
                                         <div key={order._id} className="p-4 bg-neutral-700/30 rounded-lg border border-neutral-700">
                                             <div className="flex items-center justify-between mb-3">
-                                                <h3 className="text-white font-bold">{order._id}</h3>
+                                                <h3 className="text-white font-bold">{order.paymentReference}</h3>
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium 
                                                     ${getStatusColor(order.status)}`}>
                                                     {order.status}

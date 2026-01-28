@@ -1,12 +1,21 @@
 import TrackOrderPage from '@/app/components/UserTrackOrder'
+import { verifyUser } from '@/lib/session'
+import { redirect } from 'next/navigation'
 import React from 'react'
 
-const page = ({ userId }: { userId: string }) => {
+const Page = async () => {
+  const session = await verifyUser()
+
+  if (!session || !session.user || !session.user.id) {
+    redirect('/sign-in')
+  }
+
   return (
     <div>
-        <TrackOrderPage userId={userId}/>
+      <TrackOrderPage userId={session.user.id} />
     </div>
   )
 }
 
-export default page
+
+export default Page
