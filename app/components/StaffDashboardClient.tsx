@@ -69,7 +69,7 @@ const StaffDashboardClient = () => {
                 );
 
                 const totalRevenue = revenueOrders.reduce((total: number, order: IOrder) => total + order.total, 0);
-                
+
 
                 // Revenue yesterday
                 const yesterday = new Date();
@@ -314,12 +314,13 @@ const StaffDashboardClient = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-neutral-700">
+                                    <div className="flex md:items-center flex-col md:flex-row  justify-between pt-3 border-t 
+                                    border-neutral-700 items-start gap-2 md:gap-0">
                                         <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
                                             {getStatusIcon(order.status)}
                                             <span className="text-sm font-medium capitalize">{order.status}</span>
                                         </div>
-                                        <div className="flex items-center space-x-2">
+                                        <div className="flex items-center md:flex-nowrap flex-wrap space-x-2">
                                             {['confirmed', 'out-for-delivery', 'delivered'].map((statusOption) => (
                                                 <button
                                                     key={statusOption}
