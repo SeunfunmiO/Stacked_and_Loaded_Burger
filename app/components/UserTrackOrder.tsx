@@ -153,7 +153,7 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                         {/* Order Info Card */}
                         <div className="bg-white dark:bg-neutral-950 rounded-2xl border border-gray-200 dark:border-neutral-800 p-6">
                             <div className="flex flex-col md:flex-row md:items-center items-start justify-between mb-4">
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                <h2 className="md:text-xl font-bold text-gray-900 dark:text-white">
                                     Order #{selectedOrder.paymentReference || selectedOrder._id}
                                 </h2>
                                 <span className="px-4 py-1 bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-full text-sm font-medium">

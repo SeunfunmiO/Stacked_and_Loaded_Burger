@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ShoppingBag, Star, Award, Clock, MapPin, User, Settings, LogOut, Package, Heart, Bell, ChevronRight, TrendingUp, ChefHat, ThumbsUp, Bike, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { FavoriteItem, IOrder, OrderItemPayload, Reward, TabType } from '@/lib/type';
-import { getCustomer, getSingleOrder, logOut, updateUser } from '@/lib/actions';
+import { deleteAccount, getCustomer, getSingleOrder, logOut, updateUser } from '@/lib/actions';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
@@ -98,6 +98,23 @@ const UserClient = ({ userId }: { userId: string }) => {
         }
         fetchOrder()
     }, [userId])
+
+    const deleteUserAccount = async ()=>{
+        try {
+            const res = await deleteAccount(userId)
+            if(!res.success){
+                toast.error(res.message)
+            }
+
+            toast.success(res.message)
+            localStorage.removeItem('cart')
+            localStorage.removeItem('theme')
+            router.push('/create-account')
+        } catch (error) {
+            console.error('Error deleting account' , error)
+            toast.error('Something went wrong')
+        }
+    }
 
     const updateCustomerDetails = async (data: { email: string, fullname: string }) => {
         try {
@@ -357,7 +374,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                              bg-neutral-700/30 rounded-lg border border-neutral-700 hover:border-neutral-600 transition-all">
                                                 <div className="flex items-center space-x-4">
                                                     <div>
-                                                        <p className="font-medium">ORDERID : {order.paymentReference}</p>
+                                                        <p className="font-medium text-sm md:text-base">ORDERID : {order.paymentReference}</p>
                                                         <div className="text-neutral-400 text-sm">
                                                             {order.items.map((item, index) => (
                                                                 <div key={index} className="border-b py-2">
@@ -510,7 +527,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     {orders.map((order) => (
                                         <div key={order._id} className="p-4 bg-neutral-700/30 rounded-lg border border-neutral-700">
                                             <div className="flex flex-col md:flex-row items-start gap-2 md:gap-0 md:items-center justify-between mb-3">
-                                                <h3 className="text-white font-bold">{order.paymentReference}</h3>
+                                                <h3 className="text-white font-bold text-sm md:text-base">{order.paymentReference}</h3>
                                                 <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
                                                     {getStatusIcon(order.status)}
                                                     <span className="text-sm font-medium capitalize">{order.status}</span>
@@ -586,6 +603,14 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     from-sandbrown to-[#f4a261] hover:scale-105 transition-all">
                                         Save Changes
                                     </button>
+
+                                    <button
+                                        onClick={() => deleteUserAccount() }
+                                        className="w-full py-3 rounded-lg font-medium text-white bg-red-500/5 
+                                    hover:text-red hover:bg-neutral-100 hover:scale-105 transition-all">
+                                        Delete Account
+                                    </button>
+
                                 </div>
                             </div>
                         )}

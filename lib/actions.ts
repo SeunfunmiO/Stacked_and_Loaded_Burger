@@ -727,4 +727,26 @@ export const deleteAllProducts = async () => {
     }
 }
 
-// deleteAccount
+export const deleteAccount = async(id:string)=>{
+    try {
+        await dbConnect()
+      const user =  await UserModel.findByIdAndDelete(id)
+
+      if(!user){
+        return{
+            success:false,
+            message:'User not found'
+        }
+      }
+
+        return {
+            success: true,
+            message: "Account deleted successfully",
+            
+        }
+
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Error deleting account' }
+    }
+}

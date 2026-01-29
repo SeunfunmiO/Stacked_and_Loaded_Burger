@@ -30,6 +30,11 @@
 //     const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
 //     const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
 //     const [showFilters, setShowFilters] = useState<boolean>(false);
+//     const [loading, setLoading] = useState(false);
+//     const [page, setPage] = useState(1);
+//     const [totalPages, setTotalPages] = useState(1);
+//     const LIMIT = 10; 
+
 
     
 
@@ -312,7 +317,7 @@ import React from 'react'
 
 const ManageOrderClient = () => {
   return (
-    <div>ManageOrderClient</div>
+    <div>Coming soon!</div>
   )
 }
 

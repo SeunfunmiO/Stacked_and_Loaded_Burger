@@ -9,17 +9,11 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import React from 'react'
 
-// type PageProps = {
-//     params: {
-//         _id: string
-//     }
-// }
 
 export const generateMetadata = async ({ params }: { params: Promise<{ _id: string }> }): Promise<Metadata> => {
     await dbConnect()
     const {_id} = await params
    
-
     const product = await ProductModel.findById(_id)
 
     return {
@@ -37,8 +31,6 @@ const Page = async ({ params }: { params: Promise<{ _id: string }> }) => {
     await dbConnect()
     const {_id} = await params
     const product = await ProductModel.findById(_id)
-    console.log(product)
-
    
     return (
         <div

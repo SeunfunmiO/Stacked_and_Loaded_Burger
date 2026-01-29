@@ -15,7 +15,7 @@ import {
     ThumbsUp,
     Bike,
     Package,
-    Plus
+    Plus,
 } from 'lucide-react';
 import { IOrder } from '@/lib/type';
 import { formatNaira, NairaIcon } from '@/app/components/NairaIcon';
@@ -40,6 +40,101 @@ const StaffDashboardClient = () => {
 
     const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
+    const getTodayRange = () => {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        return { start, end };
+    };
+
+    const getYesterdayRange = () => {
+        const start = new Date();
+        start.setDate(start.getDate() - 1);
+        start.setHours(0, 0, 0, 0);
+
+        const end = new Date();
+        end.setDate(end.getDate() - 1);
+        end.setHours(23, 59, 59, 999);
+
+        return { start, end };
+    };
+
+    const getTotalOrdersToday = (orders: IOrder[]) => {
+        const { start, end } = getTodayRange();
+
+        return orders.filter((order) => {
+            const createdAt = new Date(order.createdAt);
+            return createdAt >= start && createdAt <= end;
+        }).length;
+    };
+
+
+    const getCustomersToday = (orders: IOrder[]) => {
+        const { start, end } = getTodayRange();
+
+        return new Set(
+            orders
+                .filter((order) => {
+                    const createdAt = new Date(order.createdAt);
+                    return createdAt >= start && createdAt <= end;
+                })
+                .map((order) => order.user) // ideally userId or email
+        ).size;
+    };
+
+    const getRevenueInRange = (
+        orders: IOrder[],
+        start: Date,
+        end: Date
+    ) =>
+        orders
+            .filter((order) => {
+                const createdAt = new Date(order.createdAt);
+                return (
+                    createdAt >= start &&
+                    createdAt <= end &&
+                    order.status === 'delivered'
+                );
+            })
+            .reduce((sum, order) => sum + order.total, 0);
+
+    const getRevenueStats = (orders: IOrder[]) => {
+        const today = getTodayRange();
+        const yesterday = getYesterdayRange();
+
+        const revenueToday = getRevenueInRange(
+            orders,
+            today.start,
+            today.end
+        );
+
+        const revenueYesterday = getRevenueInRange(
+            orders,
+            yesterday.start,
+            yesterday.end
+        );
+
+        const revenueTrend =
+            revenueYesterday === 0 && revenueToday === 0
+                ? 0
+                : revenueYesterday === 0
+                    ? 100
+                    : ((revenueToday - revenueYesterday) / revenueYesterday) * 100;
+
+        return {
+            revenueToday,
+            revenueTrend,
+        };
+    };
+
+    const getActiveOrders = (orders: IOrder[]) =>
+        orders.filter((order) =>
+            ['pending', 'confirmed', 'out-for-delivery'].includes(order.status)
+        );
+
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -50,57 +145,26 @@ const StaffDashboardClient = () => {
                     return toast.error(res.message);
                 }
 
-                setOrders(res.data);
+                const data = res.data;
 
+                setOrders(data);
 
-                // Active orders
-                const active = res.data.filter(
-                    (order: IOrder) =>
-                        ['pending', 'confirmed', 'out-for-delivery'].includes(order.status)
-                );
+                // active orders
+                const active = getActiveOrders(data);
                 setActiveOrders(active);
 
-                // Revenue today
-                const today = new Date();
-                const revenueOrders = res.data.filter(
-                    (order: IOrder) =>
-                        new Date(order.createdAt).toDateString() === today.toDateString() &&
-                        order.status === 'delivered'
-                );
-
-                const totalRevenue = revenueOrders.reduce((total: number, order: IOrder) => total + order.total, 0);
-
-
-                // Revenue yesterday
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const previousRevenueOrders = res.data.filter(
-                    (order: IOrder) =>
-                        new Date(order.createdAt).toDateString() === yesterday.toDateString() &&
-                        order.status === 'delivered'
-                );
-                const previousRevenue = previousRevenueOrders.reduce((total: number, order: IOrder) => total + order.total, 0);
-
-                const revenuePercentage =
-                    previousRevenue === 0
-                        ? 100
-                        : ((totalRevenue - previousRevenue) / previousRevenue) * 100;
-
-                // Customers today
-                const customersSet = new Set();
-                res.data.forEach((order: IOrder) => {
-                    if (new Date(order.createdAt).toDateString() === today.toDateString()) {
-                        customersSet.add(order.user);
-                    }
-                });
+                // stats
+                const totalOrdersToday = getTotalOrdersToday(data);
+                const customersToday = getCustomersToday(data);
+                const { revenueToday, revenueTrend } = getRevenueStats(data);
 
                 setStatsState({
-                    revenue: totalRevenue,
-                    revenueTrend: `${revenuePercentage.toFixed(2)}% ${revenuePercentage >= 0 ? '↑' : '↓'
-                        } from yesterday`,
-                    customersToday: customersSet.size,
-                    ordersTrend: '' // can compute if needed
+                    revenue: revenueToday,
+                    revenueTrend: `${revenueTrend.toFixed(2)}% ${revenueTrend >= 0 ? '↑' : '↓'} from yesterday`,
+                    customersToday,
+                    ordersTrend: totalOrdersToday.toString(),
                 });
+
             } catch (error) {
                 console.error(error);
                 toast.error('Failed to fetch orders');
@@ -157,13 +221,26 @@ const StaffDashboardClient = () => {
                 return;
             }
 
+            // setActiveOrders((prev) =>
+            //     prev.map((order) =>
+            //         order._id === orderId
+            //             ? { ...order, status: newStatus }
+            //             : order
+            //     )
+            // );
             setActiveOrders((prev) =>
-                prev.map((order) =>
-                    order._id === orderId
-                        ? { ...order, status: newStatus }
-                        : order
-                )
+                prev
+                    .map((order) =>
+                        order._id === orderId
+                            ? { ...order, status: newStatus }
+                            : order
+                    )
+                    .filter(
+                        (order) =>
+                            ['pending', 'confirmed', 'out-for-delivery'].includes(order.status)
+                    )
             );
+
 
             toast.success('Order status updated!');
         } catch (error) {
@@ -214,7 +291,7 @@ const StaffDashboardClient = () => {
                         <div className="w-12 h-12 rounded-full flex items-center justify-center bg-linear-to-r from-sandbrown to-[#f4a261]">
                             <ShoppingBag className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-green-400 text-sm font-medium">{statsState.ordersTrend}</span>
+                        <span className="text-green-400 text-sm font-medium">+{statsState.ordersTrend}</span>
                     </div>
                     <h3 className="text-neutral-400 text-sm mb-1">Total Orders</h3>
                     <p className="text-white text-3xl font-bold">{orders.length}</p>
@@ -371,7 +448,7 @@ const StaffDashboardClient = () => {
                         <div className="space-y-3">
                             <button
                                 onClick={() => router.push('/staff/manage-orders')}
-                                className="w-full py-3 px-4 bg-linear-to-r from-sandbrown7] to-[#f4a261]
+                                className="w-full py-3 px-4 bg-linear-to-r from-sandbrown to-[#f4a261]
                              text-white rounded-lg font-medium hover:scale-105 transition-all flex items-center justify-center">
                                 <ChefHat className="w-5 h-5 mr-2" />
                                 Manage Orders
