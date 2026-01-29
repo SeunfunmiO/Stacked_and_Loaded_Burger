@@ -9,6 +9,7 @@ interface IUser {
     isAdmin: boolean
     isStaff: boolean
     isRider: boolean
+    agree:boolean
 }
 
 
@@ -36,6 +37,10 @@ const UserSchema = new Schema<IUser>({
         default: false
     },
     isRider: {
+        type: Boolean,
+        default: false
+    },
+    agree: {
         type: Boolean,
         default: false
     },

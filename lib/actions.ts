@@ -9,54 +9,76 @@ import ProductModel from "@/app/models/product";
 import { revalidatePath } from "next/cache";
 import cloudinary from "./cloudinary";
 import OptionsModel from "@/app/models/meunOptions";
-import { CreateOrderInput, GetOrdersResponse, IProduct, OrderItemPayload, PaymentMethod, PaymentStatus, PlaceOrderPayload, updateOrderStatusInput } from "./type";
+import { CreateOrderInput, GetOrdersResponse, IProduct, OrderItemPayload} from "./type";
 import OrderModel from "@/app/models/order";
 import { Types } from "mongoose";
 
+
+
 export const register = async (userData: {
-    fullname: string,
-    email: string,
-    password: string
+    fullname: string;
+    email: string;
+    password: string;
 }) => {
     try {
-        await dbConnect()
+        await dbConnect();
 
+        // hash password
         const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(userData.password, salt)
-        userData.password = hash
+        const hash = await bcrypt.hash(userData.password, salt);
 
-        const user = await UserModel.create(userData)
+        const user = await UserModel.create({
+            ...userData,
+            password: hash,
+        });
 
         if (!user) {
             return {
                 success: false,
-                message: "An error occured. Please,try again"
-            }
+                message: "An error occurred. Please try again",
+            };
         }
 
-        await fetch("http://localhost:3000/api/sendEmail", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                fullname: userData.fullname,
-                email: userData.email,
-            }),
-        });
+        let emailStatus: "sent" | "failed" = "failed";
+
+        try {
+            const res = await fetch(
+                "https://stacked-and-loaded-burger.vercel.app/api/sendEmail",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        fullname: userData.fullname,
+                        email: userData.email,
+                    }),
+                }
+            );
+
+            if (res.ok) {
+                emailStatus = "sent";
+            } else {
+                console.error("Email API error:", await res.text());
+            }
+        } catch (emailError) {
+            console.error("Email request failed:", emailError);
+        }
 
         return {
             success: true,
-            message: "Account created successfully"
-        }
-
-
+            message: "Account created successfully",
+            emailStatus,
+        };
     } catch (error) {
-        console.log("Error creating account :", error);
+        console.error("Error creating account:", error);
         return {
             success: false,
-            message: "Internal server error"
-        }
+            message: "Internal server error",
+        };
     }
-}
+};
+
 
 export const signIn = async (userData: {
     id: string,

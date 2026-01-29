@@ -9,7 +9,7 @@ export async function POST(req: Request) {
             fullname,
             email,
             websiteName: "Stacked & Loaded Burger",
-            websiteUrl: "https://stackedandloaded.com",
+            websiteUrl: "https://stacked-and-loaded-burger.vercel.app/",
         });
 
         return NextResponse.json({ success: true, message: "User registered and welcome email sent!", result });
@@ -19,3 +19,4 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, error });
     }
 }
+
