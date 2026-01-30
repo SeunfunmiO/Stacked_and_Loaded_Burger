@@ -21,8 +21,8 @@ interface WelcomeEmailProps {
 export async function sendWelcomeEmail({
   fullname,
   email,
-  websiteName = 'Stacked & Loader Burger',
-  websiteUrl = 'https://yourwebsite.com',
+  websiteName = 'Stacked & Loaded Burger',
+  websiteUrl = 'https://stacked-and-loaded-burger.vercel.app/',
 }: WelcomeEmailProps) {
   const emailHtml = `
     <!DOCTYPE html>
@@ -42,9 +42,9 @@ export async function sendWelcomeEmail({
                     <tr>
                         <td style="background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); padding: 40px 30px; text-align: center;">
                             <div style="width: 80px; height: 80px; margin: 0 auto 20px; background-color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
-                                <span style="font-size: 40px;">🍔</span>
+                                      <img src="/stacked&loaded.png" alt="🍔" style="width: 30px; height: 30px; " />
                             </div>
-                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">Welcome to Burger Palace!</h1>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">Welcome to Stacked & Loaded Burger!</h1>
                             <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px; opacity: 0.95;">Big Burgers , Big Flavours.</p>
                         </td>
                     </tr>
@@ -102,7 +102,7 @@ export async function sendWelcomeEmail({
                             <table role="presentation" style="width: 100%; border-collapse: collapse;">
                                 <tr>
                                     <td align="center" style="padding: 10px 0;">
-                                        <a href="https://yourburgerstore.com/menu" style="display: inline-block; background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(220, 148, 87, 0.4); transition: transform 0.2s;">
+                                        <a href="https://stacked-and-loaded-burger.vercel.app/order-delivery" style="display: inline-block; background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(220, 148, 87, 0.4); transition: transform 0.2s;">
                                             Order Your First Burger →
                                         </a>
                                     </td>
@@ -121,18 +121,16 @@ export async function sendWelcomeEmail({
 
                             <!-- Social Links -->
                             <div style="margin: 20px 0;">
-                                <a href="#" style="display: inline-block; margin: 0 8px; text-decoration: none;">
-                                    <span style="display: inline-block; width: 40px; height: 40px; background-color: #262626; border-radius: 50%; line-height: 40px; color: #dc9457; font-size: 18px; border: 1px solid #404040;">${
-                                    Phone}</span>
+                                <a href="tel:+12345" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                                    <span style="display: inline-block; width: 40px; height: 40px; background-color: #262626; border-radius: 50%; line-height: 40px; color: #dc9457; font-size: 18px; border: 1px solid #404040;">📞</span>
                                 </a>
                                 <a href="#" style="display: inline-block; margin: 0 8px; text-decoration: none;">
-                                    <span style="display: inline-block; width: 40px; height: 40px; background-color: #262626; border-radius: 50%; line-height: 40px; color: #dc9457; font-size: 18px; border: 1px solid #404040;">${
-                                    Camera}</span>
+                                    <span style="display: inline-block; width: 40px; height: 40px; background-color: #262626; border-radius: 50%; line-height: 40px; color: #dc9457; font-size: 18px; border: 1px solid #404040;">📸</span>
                                 </a>
                             </div>
 
                             <p style="margin: 20px 0 10px; color: #737373; font-size: 12px;">
-                                © $${new Date().getFullYear()} Stacked & Loaded Burger. All rights reserved.
+                                © ${new Date().getFullYear()} Stacked & Loaded Burger. All rights reserved.
                             </p>
                             <p style="margin: 0; color: #737373; font-size: 12px;">
                                 123 Ogooluwa Street, Osogbo, Osun State<br>
@@ -188,3 +186,5 @@ export async function sendWelcomeEmail({
     return { success: false, error };
   }
 }
+
+

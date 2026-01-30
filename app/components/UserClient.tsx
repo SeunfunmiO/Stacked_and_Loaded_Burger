@@ -93,16 +93,16 @@ const UserClient = ({ userId }: { userId: string }) => {
             }
 
             setOrders(res.orders)
-            
+
             setRecentOrder(res.orders.slice(0, 1))
         }
         fetchOrder()
     }, [userId])
 
-    const deleteUserAccount = async ()=>{
+    const deleteUserAccount = async () => {
         try {
             const res = await deleteAccount(userId)
-            if(!res.success){
+            if (!res.success) {
                 toast.error(res.message)
             }
 
@@ -111,7 +111,7 @@ const UserClient = ({ userId }: { userId: string }) => {
             localStorage.removeItem('theme')
             router.push('/create-account')
         } catch (error) {
-            console.error('Error deleting account' , error)
+            console.error('Error deleting account', error)
             toast.error('Something went wrong')
         }
     }
@@ -150,21 +150,21 @@ const UserClient = ({ userId }: { userId: string }) => {
     };
 
     const getStatusIcon = (status: IOrder['status']) => {
-            switch (status) {
-                case 'pending':
-                    return <Clock className="w-4 h-4" />;
-                case 'confirmed':
-                    return <ThumbsUp className="w-4 h-4" />;
-                case 'out-for-delivery':
-                    return <Bike className="w-4 h-4" />;
-                case 'delivered':
-                    return <CheckCircle className="w-4 h-4" />;
-                case 'cancelled':
-                    return <XCircle className="w-4 h-4" />;
-                default:
-                    return <AlertCircle className="w-4 h-4" />;
-            }
-        };
+        switch (status) {
+            case 'pending':
+                return <Clock className="w-4 h-4" />;
+            case 'confirmed':
+                return <ThumbsUp className="w-4 h-4" />;
+            case 'out-for-delivery':
+                return <Bike className="w-4 h-4" />;
+            case 'delivered':
+                return <CheckCircle className="w-4 h-4" />;
+            case 'cancelled':
+                return <XCircle className="w-4 h-4" />;
+            default:
+                return <AlertCircle className="w-4 h-4" />;
+        }
+    };
 
     // const orderAgain = (orders) => {
     //     if (!orders || orders.length === 0) return;
@@ -383,7 +383,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                                     >
                                                                         <Image
                                                                             alt={item.name}
-                                                                            src={'/cheeseBurger.png'}
+                                                                            src={'/Cheeseburger.png'}
                                                                             width={40}
                                                                             height={40}
                                                                         />
@@ -434,9 +434,9 @@ const UserClient = ({ userId }: { userId: string }) => {
                                             <ChevronRight className="w-6 h-6 text-neutral-400" />
                                         </div>
                                     </div>
-                                    <div 
-                                    onClick={()=>router.push('/user/track-orders')}
-                                    className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
+                                    <div
+                                        onClick={() => router.push('/user/track-orders')}
+                                        className="bg-neutral-800/50 backdrop-blur-xl rounded-2xl border border-neutral-700 p-6 
                                     hover:border-neutral-600 transition-all cursor-pointer"
                                     >
                                         <div className="flex items-center justify-between">
@@ -605,7 +605,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                     </button>
 
                                     <button
-                                        onClick={() => deleteUserAccount() }
+                                        onClick={() => deleteUserAccount()}
                                         className="w-full py-3 rounded-lg font-medium text-white bg-red-500/5 
                                     hover:text-red hover:bg-neutral-100 hover:scale-105 transition-all">
                                         Delete Account
