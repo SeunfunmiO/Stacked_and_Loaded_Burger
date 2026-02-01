@@ -3,9 +3,10 @@
 
 import React, { useEffect, useState } from 'react'
 import { Search, MapPin, Clock, CheckCircle, Package, Bike, Home, Phone } from 'lucide-react'
-import { getSingleOrder } from '@/lib/actions'
+import {  getSingleOrder } from '@/lib/actions'
 import { toast } from 'react-toastify'
 import { IOrder, OrderItemPayload } from '@/lib/type'
+import Image from 'next/image'
 
 export default function TrackOrderPage({ userId }: { userId: string }) {
     const [orderNumber, setOrderNumber] = useState('')
@@ -17,7 +18,7 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
         const fetchOrder = async () => {
             setLoading(true)
             const res = await getSingleOrder({ userId })
-            console.log(res)
+            console.log('📦 Fetched orders:', res)
 
             if (!res.success) {
                 toast.error(res.message)
@@ -26,10 +27,12 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
             }
 
             setOrders(res.orders)
+
             // Auto-select first order if available
             if (res.orders && res.orders.length > 0) {
                 setSelectedOrder(res.orders[0])
-                setOrderNumber(res.orders[0].paymentReference || '')
+                // ✅ Fixed: Set the paymentReference as the default value
+                setOrderNumber(res.orders[0].paymentReference || res.orders[0]._id)
             }
             setLoading(false)
         }
@@ -42,9 +45,22 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
             return
         }
 
-        const order = orders.find(o => o._id === orderNumber || o._id === orderNumber)
+        // ✅ Fixed: Search by paymentReference first, then _id as fallback
+        const order = orders.find(o =>
+            o.paymentReference === orderNumber ||
+            o._id === orderNumber
+        )
+
+        console.log('🔍 Searching for order:', orderNumber)
+        console.log('📋 Available orders:', orders.map(o => ({
+            id: o._id,
+            ref: o.paymentReference
+        })))
+        console.log('✅ Found order:', order)
+
         if (order) {
             setSelectedOrder(order)
+            toast.success('Order found!')
         } else {
             toast.error('Order not found')
             setSelectedOrder(null)
@@ -63,7 +79,6 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
         }
     }
 
-    // Generate timeline based on order status
     const generateTimeline = (currentStatus: string) => {
         const allStatuses = [
             { status: 'placed', label: 'Order Placed' },
@@ -107,15 +122,30 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                                 <select
                                     value={orderNumber}
                                     onChange={(e) => {
-                                        setOrderNumber(e.target.value)
-                                        const order = orders.find(o => o._id === e.target.value)
+                                        const selectedValue = e.target.value
+                                        setOrderNumber(selectedValue)
+
+                                        // ✅ Fixed: Find by paymentReference or _id
+                                        const order = orders.find(o =>
+                                            o.paymentReference === selectedValue ||
+                                            o._id === selectedValue
+                                        )
+
                                         setSelectedOrder(order || null)
+
+                                        if (order) {
+                                            toast.success('Order selected!')
+                                        }
                                     }}
                                     className="w-full px-4 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-sandbrown transition-colors"
                                 >
                                     <option value="">Select an order</option>
                                     {orders.map((order) => (
-                                        <option key={order._id} value={order.paymentReference}>
+                                        // ✅ Fixed: Use paymentReference as value
+                                        <option
+                                            key={order._id}
+                                            value={order.paymentReference || order._id}
+                                        >
                                             Order #{order.paymentReference || order._id} - {order.status}
                                         </option>
                                     ))}
@@ -131,7 +161,7 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                                     type="text"
                                     value={orderNumber}
                                     onChange={(e) => setOrderNumber(e.target.value)}
-                                    placeholder="Or enter order ID manually"
+                                    placeholder="Or enter order reference manually"
                                     className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:border-sandbrown transition-colors"
                                     onKeyPress={(e) => e.key === 'Enter' && handleTrackOrder()}
                                 />
@@ -163,11 +193,11 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                             <div className="space-y-2 text-sm">
                                 <div className="flex items-center text-gray-600 dark:text-gray-400">
                                     <MapPin className="w-4 h-4 mr-2 text-sandbrown" />
-                                    {selectedOrder.delivery || selectedOrder.delivery || 'Delivery address not available'}
+                                    {selectedOrder.delivery || 'Delivery address not available'}
                                 </div>
                                 <div className="flex items-center text-gray-600 dark:text-gray-400">
                                     <Clock className="w-4 h-4 mr-2 text-sandbrown" />
-                                    Estimated arrival: {'30-45 minutes'}
+                                    Estimated arrival: 30-45 minutes
                                 </div>
                             </div>
                         </div>
@@ -178,7 +208,6 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                                 Order Progress
                             </h3>
                             <div className="relative">
-                                {/* Progress Line */}
                                 <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-neutral-800"></div>
                                 {(() => {
                                     const timeline = generateTimeline(selectedOrder.status)
@@ -192,7 +221,6 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                                                 style={{ height: `${progressPercent}%` }}
                                             ></div>
 
-                                            {/* Timeline Steps */}
                                             <div className="space-y-6">
                                                 {timeline.map((step, index) => (
                                                     <div key={index} className="flex items-start relative">
@@ -225,7 +253,6 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                         </div>
 
                         {/* Rider Info */}
-
                         <div className="bg-linear-to-r from-sandbrown/10 to-[#f4a261]/10 dark:from-sandbrown/5 dark:to-[#f4a261]/5 border border-sandbrown/20 dark:border-sandbrown/10 rounded-2xl p-6">
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                                 <Bike className="w-5 h-5 mr-2 text-sandbrown" />
@@ -234,24 +261,21 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-semibold text-gray-900 dark:text-white">
-                                        {'Musa Abdullahi'}
+                                        Musa Abdullahi
                                     </p>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         On the way to you
                                     </p>
                                 </div>
-
                                 <a
-                                    href={`tel:${'08012345678'}`}
+                                    href="tel:08012345678"
                                     className="flex items-center px-4 py-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white rounded-lg font-medium hover:border-sandbrown transition-all"
                                 >
                                     <Phone className="w-4 h-4 mr-2" />
                                     Call
                                 </a>
-
                             </div>
                         </div>
-                       
 
                         {/* Order Items */}
                         {selectedOrder.items && selectedOrder.items.length > 0 && (
@@ -264,11 +288,16 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                                         <div key={index} className="flex items-center justify-between">
                                             <div className="flex items-center">
                                                 <div className="w-12 h-12 bg-gray-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center mr-3 text-2xl">
-                                                    🍔
+                                                    <Image
+                                                        alt={item.name}
+                                                        src={'/Cheeseburger.png'}
+                                                        width={60}
+                                                        height={60}
+                                                    />
                                                 </div>
                                                 <div>
                                                     <p className="font-medium text-gray-900 dark:text-white">
-                                                        {item.name }
+                                                        {item.name}
                                                     </p>
                                                     <p className="text-sm text-gray-500 dark:text-gray-400">
                                                         Qty: {item.quantity}
@@ -276,14 +305,14 @@ export default function TrackOrderPage({ userId }: { userId: string }) {
                                                 </div>
                                             </div>
                                             <p className="font-semibold text-gray-900 dark:text-white">
-                                                ₦{((item.price|| 0) * item.quantity).toLocaleString()}
+                                                ₦{((item.price || 0) * item.quantity).toLocaleString()}
                                             </p>
                                         </div>
                                     ))}
                                     <div className="pt-3 border-t border-gray-200 dark:border-neutral-800 flex items-center justify-between">
                                         <p className="font-bold text-gray-900 dark:text-white">Total</p>
                                         <p className="text-xl font-bold text-sandbrown">
-                                            ₦{(selectedOrder.total ||  0).toLocaleString()}
+                                            ₦{(selectedOrder.total || 0).toLocaleString()}
                                         </p>
                                     </div>
                                 </div>

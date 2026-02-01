@@ -94,7 +94,7 @@ const UserClient = ({ userId }: { userId: string }) => {
 
             setOrders(res.orders)
 
-            setRecentOrder(res.orders.slice(0, 1))
+            setRecentOrder(res.orders.slice(0, 3))
         }
         fetchOrder()
     }, [userId])
@@ -383,7 +383,7 @@ const UserClient = ({ userId }: { userId: string }) => {
                                                                     >
                                                                         <Image
                                                                             alt={item.name}
-                                                                            src={'/Cheeseburger.png'}
+                                                                            src={order.picture ? order.picture : '/Cheeseburger.png'}
                                                                             width={40}
                                                                             height={40}
                                                                         />
@@ -606,8 +606,8 @@ const UserClient = ({ userId }: { userId: string }) => {
 
                                     <button
                                         onClick={() => deleteUserAccount()}
-                                        className="w-full py-3 rounded-lg font-medium text-white bg-red-500/5 
-                                    hover:text-red hover:bg-neutral-100 hover:scale-105 transition-all">
+                                        className="w-full py-3 rounded-lg font-medium text-red-400 bg-red-500/5 
+                                    hover:text-white hover:bg-neutral-100 hover:scale-105 transition-all">
                                         Delete Account
                                     </button>
 

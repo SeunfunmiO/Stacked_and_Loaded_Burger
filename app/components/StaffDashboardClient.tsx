@@ -360,10 +360,10 @@ const StaffDashboardClient = () => {
                                     key={order._id}
                                     className={`p-4 bg-neutral-700/30 rounded-xl border hover:border-neutral-600 transition-all`}
                                 >
-                                    <div className="flex items-start justify-between mb-3">
+                                    <div className="flex flex-col md:flex-row gap-2 md:gap-0 md:items-center justify-between mb-3">
                                         <div className="flex-1">
-                                            <div className="flex items-center space-x-3 mb-2">
-                                                <h3 className="text-white font-bold">{order._id}</h3>
+                                            <div className="flex flex-col md:flex-row gap-2 md:gap-0 md:items-center space-x-3 mb-2">
+                                                <h3 className="text-white font-bold">{order.paymentReference}</h3>
                                                 <span className="text-neutral-500 text-sm">{new Date(order.createdAt).toLocaleString()}</span>
                                             </div>
                                             <p className="text-neutral-300 font-medium mb-1">{order.user}</p>
@@ -391,13 +391,13 @@ const StaffDashboardClient = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex md:items-center flex-col md:flex-row  justify-between pt-3 border-t 
+                                    <div className="flex md:items-center flex-col md:flex-row justify-between pt-3 border-t 
                                     border-neutral-700 items-start gap-2 md:gap-0">
                                         <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusColor(order.status)}`}>
                                             {getStatusIcon(order.status)}
                                             <span className="text-sm font-medium capitalize">{order.status}</span>
                                         </div>
-                                        <div className="flex items-center md:flex-nowrap flex-wrap space-x-2">
+                                        <div className="flex gap-2 md:gap-0 items-center md:flex-nowrap flex-wrap space-x-2">
                                             {['confirmed', 'out-for-delivery', 'delivered'].map((statusOption) => (
                                                 <button
                                                     key={statusOption}

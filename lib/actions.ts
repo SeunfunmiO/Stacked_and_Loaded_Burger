@@ -9,9 +9,10 @@ import ProductModel from "@/app/models/product";
 import { revalidatePath } from "next/cache";
 import cloudinary from "./cloudinary";
 import OptionsModel from "@/app/models/meunOptions";
-import { CreateOrderInput, GetOrdersResponse, IProduct, OrderItemPayload} from "./type";
+import { CreateOrderInput, GetOrdersResponse, IProduct, OrderItemPayload } from "./type";
 import OrderModel from "@/app/models/order";
 import { Types } from "mongoose";
+import { sendOrderWhatsApp } from "./whatsappSender";
 
 
 
@@ -43,7 +44,7 @@ export const register = async (userData: {
 
         try {
             const res = await fetch(
-                "https://stacked-and-loaded-burger.vercel.app/api/sendEmail",
+                `${process.env.NEXT_PUBLIC_APP_URL}/api/sendEmail`,
                 {
                     method: "POST",
                     headers: {
@@ -517,6 +518,53 @@ export const createOrder = async (data: CreateOrderInput) => {
             paymentReference: data.paymentReference,
         })
 
+
+        try {
+            await sendOrderWhatsApp({
+                phone: data.customer.phone,
+                name: data.customer.name,
+                orderNumber: order._id.toString(),
+                total: order.total
+            });
+        } catch (error) {
+            console.error('error sending whataapp message : ', error)
+        }
+
+        try {
+            const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-order-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    customerEmail: data.customer.email,
+                    customerName: data.customer.name,
+                    orderNumber: order._id.toString(),
+                    items: data.items,
+                    subtotal,
+                    deliveryFee: data.deliveryFee,
+                    total,
+                    deliveryAddress: data.delivery,
+                    estimatedDelivery: '30-45 minutes',
+                    orderDate: new Date().toLocaleString('en-NG', {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                    }),
+                }),
+            });
+
+            const emailResult = await emailResponse.json();
+
+            if (!emailResult.success) {
+                console.error('❌ Email failed (non-blocking):', emailResult.message);
+            } else {
+                console.log('✅ Confirmation email sent successfully');
+            }
+        } catch (emailError) {
+            console.error('❌ Email error (non-blocking):', emailError);
+        }
+
+
         return {
             success: true,
             orderId: order._id.toString()
@@ -749,22 +797,22 @@ export const deleteAllProducts = async () => {
     }
 }
 
-export const deleteAccount = async(id:string)=>{
+export const deleteAccount = async (id: string) => {
     try {
         await dbConnect()
-      const user =  await UserModel.findByIdAndDelete(id)
+        const user = await UserModel.findByIdAndDelete(id)
 
-      if(!user){
-        return{
-            success:false,
-            message:'User not found'
+        if (!user) {
+            return {
+                success: false,
+                message: 'User not found'
+            }
         }
-      }
 
         return {
             success: true,
             message: "Account deleted successfully",
-            
+
         }
 
     } catch (error) {

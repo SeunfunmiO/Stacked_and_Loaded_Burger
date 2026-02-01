@@ -1,4 +1,4 @@
-import { Camera, Phone } from 'lucide-react';
+
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
@@ -42,7 +42,7 @@ export async function sendWelcomeEmail({
                     <tr>
                         <td style="background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); padding: 40px 30px; text-align: center;">
                             <div style="width: 80px; height: 80px; margin: 0 auto 20px; background-color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
-                                      <img src="/stacked&loaded.png" alt="🍔" style="width: 30px; height: 30px; " />
+                                      <span>🍔</span>
                             </div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">Welcome to Stacked & Loaded Burger!</h1>
                             <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px; opacity: 0.95;">Big Burgers , Big Flavours.</p>
@@ -188,3 +188,135 @@ export async function sendWelcomeEmail({
 }
 
 
+export const orderConfirmationEmailTemplate = (orderData: {
+    orderNumber: string;
+    customerName: string;
+    items: Array<{
+        name: string;
+        quantity: number;
+        price: number;
+        meatType?: string;
+        side?: string;
+        beverage?: string;
+        toppings?: Array<{ name: string; price: number }>;
+    }>;
+    subtotal: number;
+    deliveryFee: number;
+    total: number;
+    deliveryAddress: string;
+    estimatedDelivery: string;
+    orderDate: string;
+}) => {
+    const formatNaira = (amount: number) => `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f5f5;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); padding: 40px 30px; text-align: center;">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 20px; background-color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 40px;">🍔</span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Order Confirmed!</h1>
+                            <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px;">Thank you for your order</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 30px;">
+                            <h2 style="margin: 0 0 10px; color: #1a1a1a; font-size: 20px; font-weight: bold;">Hi ${orderData.customerName}! 👋</h2>
+                            <p style="margin: 0 0 20px; color: #666666; font-size: 15px; line-height: 1.6;">
+                                Your order has been confirmed! Here are your order details:
+                            </p>
+                            
+                            <!-- Order Number -->
+                            <div style="background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); border-radius: 12px; padding: 20px; margin-bottom: 25px; text-align: center;">
+                                <p style="margin: 0 0 5px; color: #ffffff; font-size: 13px;">Order Number</p>
+                                <p style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold;">${orderData.orderNumber}</p>
+                            </div>
+
+                            <!-- Order Items -->
+                            <h3 style="margin: 0 0 15px; color: #1a1a1a; font-size: 18px; font-weight: bold;">Your Order</h3>
+                            ${orderData.items.map(item => `
+                                <div style="padding: 15px 0; border-bottom: 1px solid #eeeeee;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div style="flex: 1;">
+                                            <p style="margin: 0 0 5px; color: #1a1a1a; font-size: 15px; font-weight: 600;">
+                                                ${item.quantity}x ${item.name}
+                                            </p>
+                                            ${item.meatType ? `<p style="margin: 2px 0; color: #666666; font-size: 13px;">Meat: ${item.meatType}</p>` : ''}
+                                            ${item.side ? `<p style="margin: 2px 0; color: #666666; font-size: 13px;">Side: ${item.side}</p>` : ''}
+                                            ${item.beverage ? `<p style="margin: 2px 0; color: #666666; font-size: 13px;">Beverage: ${item.beverage}</p>` : ''}
+                                        </div>
+                                        <p style="margin: 0; color: #1a1a1a; font-size: 15px; font-weight: 600;">
+                                            ${formatNaira(item.price * item.quantity)}
+                                        </p>
+                                    </div>
+                                </div>
+                            `).join('')}
+
+                            <!-- Order Summary -->
+                            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #eeeeee;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span style="color: #666666; font-size: 14px;">Subtotal</span>
+                                    <span style="color: #1a1a1a; font-size: 14px; font-weight: 600;">${formatNaira(orderData.subtotal)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                    <span style="color: #666666; font-size: 14px;">Delivery Fee</span>
+                                    <span style="color: #1a1a1a; font-size: 14px; font-weight: 600;">${formatNaira(orderData.deliveryFee)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding-top: 15px; border-top: 2px solid #eeeeee;">
+                                    <span style="color: #1a1a1a; font-size: 16px; font-weight: bold;">Total</span>
+                                    <span style="color: #dc9457; font-size: 20px; font-weight: bold;">${formatNaira(orderData.total)}</span>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Info -->
+                            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 15px; margin: 25px 0;">
+                                <p style="margin: 0 0 5px; color: #999999; font-size: 12px;">📍 Delivery Address</p>
+                                <p style="margin: 0; color: #1a1a1a; font-size: 14px;">${orderData.deliveryAddress}</p>
+                            </div>
+
+                            <!-- Track Button -->
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${process.env.NEXT_PUBLIC_APP_URL}/track-order" style="display: inline-block; background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 10px; font-weight: bold; font-size: 15px;">
+                                    Track Your Order
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px; background-color: #f9f9f9; text-align: center;">
+                            <p style="margin: 0; color: #666666; font-size: 14px;">
+                                Questions? Email us at 
+                                <a href="mailto:support@stackedandloaded.com" style="color: #dc9457;">support@stackedandloaded.com</a>
+                            </p>
+                            <p style="margin: 10px 0 0; color: #999999; font-size: 12px;">
+                                © ${new Date().getFullYear()} Stacked & Loaded Burger
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+    `.trim();
+};
