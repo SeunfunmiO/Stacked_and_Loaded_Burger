@@ -292,7 +292,7 @@ export const orderConfirmationEmailTemplate = (orderData: {
 
                             <!-- Track Button -->
                             <div style="text-align: center; margin: 30px 0;">
-                                <a href="${process.env.NEXT_PUBLIC_APP_URL}/track-order" style="display: inline-block; background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 10px; font-weight: bold; font-size: 15px;">
+                                <a href="${process.env.NEXT_PUBLIC_APP_URL}/user/track-orders" style="display: inline-block; background: linear-gradient(135deg, #dc9457 0%, #f4a261 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 10px; font-weight: bold; font-size: 15px;">
                                     Track Your Order
                                 </a>
                             </div>
